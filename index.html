@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>삼송역스칸센파인공인중개사사무소 | AI 매물 상담 챗봇</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            navy: {
+              950: '#070E1B',
+              900: '#0B172A',
+              800: '#132440',
+              700: '#1D3557',
+            },
+            gold: {
+              400: '#FBBF24',
+              500: '#D97706',
+              600: '#B45309',
+            },
+            emerald: {
+              500: '#10B981',
+              600: '#059669',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom Scrollbar for smooth UX */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .typing-dot {
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
+
+  <!-- Toast Notification Container (Alert 대체용) -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="bg-navy-900 text-white shadow-md shrink-0 z-20 border-b border-navy-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-navy-950 font-bold text-lg shadow-inner shrink-0">
+          <i class="fa-solid fa-building-shield"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">삼송역스칸센파인공인중개사사무소</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">파인부동산</span>
+          </div>
+          <p class="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+            <i class="fa-solid fa-location-dot text-emerald-400"></i>
+            <span>경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송역 3호선 6번 출구 인근)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher & Summary Action -->
+      <div class="flex items-center gap-2">
+        <button id="btn-tab-chat" onclick="switchTab('chat')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
+          <i class="fa-solid fa-comments"></i>
+          <span>AI 매물 상담</span>
+        </button>
+        <button id="btn-tab-admin" onclick="switchTab('admin')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-navy-800 text-slate-300 hover:bg-navy-700 hover:text-white border border-navy-700">
+          <i class="fa-solid fa-database"></i>
+          <span>보유 매물 관리</span>
+          <span id="property-count-badge" class="ml-1 px-1.5 py-0.2 text-xs rounded-full bg-amber-500 text-navy-950 font-bold">0</span>
+        </button>
+        <button onclick="openSummaryModal()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-navy-950 shadow-sm">
+          <i class="fa-solid fa-file-signature"></i>
+          <span class="hidden sm:inline">상담 요약·예약 접수증</span>
+          <span class="sm:hidden">접수증</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto overflow-hidden flex flex-col lg:flex-row p-2 sm:p-4 gap-4">
+
+    <!-- ==================== VIEW 1: AI CHAT INTERFACE ==================== -->
+    <div id="view-chat" class="flex-1 flex flex-col lg:flex-row gap-4 h-full overflow-hidden">
+      
+      <!-- Left Sidebar: Quick Consultation Chips & Office Info (Desktop) -->
+      <aside class="lg:w-80 shrink-0 flex flex-col gap-3 overflow-y-auto">
+        <!-- Office Trust Card -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              24시간 실시간 AI 비서 응대중
+            </span>
+            <span class="text-xs text-slate-400">201동 1층 113호</span>
+          </div>
+          <h2 class="text-sm font-bold text-navy-900 mb-1">힐스테이트 삼송역 스칸센 전문</h2>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            2,513세대 대단지 오피스텔 및 단지 내 상가 전문 중개. 매물 조회, 시세 브리핑, 전세보증보험(HUG/SGI) 요건 및 방문 임장 예약을 도와드립니다.
+          </p>
+          <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+              <span class="text-slate-400 block text-[11px]">전문 분야</span>
+              <span class="font-semibold text-navy-800">오피스텔·상가</span>
+            </div>
+            <div class="bg-slate-50 p-2 rounded-xl border border-slate-100">
+              <span class="text-slate-400 block text-[11px]">안전 중개</span>
+              <span class="font-semibold text-emerald-600">권리분석·보증보험</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Consultation Menu Chips -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex-1 flex flex-col">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt text-amber-500"></i>
+            빠른 상담 메뉴
+          </h3>
+          <div class="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-1 lg:pb-0">
+            <button onclick="sendQuickPrompt('🏢 힐스테이트 삼송역 스칸센 오피스텔 매물 문의')" class="text-left p-3 rounded-xl bg-slate-50 hover:bg-navy-900 hover:text-white border border-slate-200/80 transition-all text-xs sm:text-sm font-medium text-navy-900 shrink-0 lg:shrink flex items-center justify-between group">
+              <span>🏢 힐스테이트 삼송역 스칸센 오피스텔 매물 문의</span>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-400 ml-2"></i>
+            </button>
+            <button onclick="sendQuickPrompt('🏪 단지 내 상가 임대/창업 조건 상담')" class="text-left p-3 rounded-xl bg-slate-50 hover:bg-navy-900 hover:text-white border border-slate-200/80 transition-all text-xs sm:text-sm font-medium text-navy-900 shrink-0 lg:shrink flex items-center justify-between group">
+              <span>🏪 단지 내 상가 임대/창업 조건 상담</span>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-400 ml-2"></i>
+            </button>
+            <button onclick="sendQuickPrompt('📝 전세보증보험(HUG/SGI) 가입 요건 안내')" class="text-left p-3 rounded-xl bg-slate-50 hover:bg-navy-900 hover:text-white border border-slate-200/80 transition-all text-xs sm:text-sm font-medium text-navy-900 shrink-0 lg:shrink flex items-center justify-between group">
+              <span>📝 전세보증보험(HUG/SGI) 가입 요건 안내</span>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-400 ml-2"></i>
+            </button>
+            <button onclick="sendQuickPrompt('📅 방문 임장 및 대면 상담 예약 접수')" class="text-left p-3 rounded-xl bg-slate-50 hover:bg-navy-900 hover:text-white border border-slate-200/80 transition-all text-xs sm:text-sm font-medium text-navy-900 shrink-0 lg:shrink flex items-center justify-between group">
+              <span>📅 방문 임장 및 대면 상담 예약 접수</span>
+              <i class="fa-solid fa-chevron-right text-xs text-slate-400 group-hover:text-amber-400 ml-2"></i>
+            </button>
+          </div>
+
+          <div class="mt-auto pt-4 hidden lg:block">
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200/70 text-xs text-amber-900">
+              <p class="font-semibold mb-1"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>상담 팁</p>
+              <p class="leading-relaxed text-amber-800">"보증금 2천에 월세 85만원 원룸 찾아줘" 또는 "1층 카페 창업할 상가 추천해줘"처럼 편하게 질문해 보세요!</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Chat Panel -->
+      <section class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200/80 flex flex-col overflow-hidden">
+        <!-- Chat Sub-header -->
+        <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-navy-900 text-amber-400 flex items-center justify-center text-sm font-bold">
+              파인
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-navy-900">파인부동산 AI 전문 상담사</h2>
+              <p class="text-[11px] text-slate-500">실시간 보유 매물 DB 연동 · 맞춤형 조건 매칭</p>
+            </div>
+          </div>
+          <button onclick="resetChat()" class="text-xs text-slate-500 hover:text-navy-900 px-2.5 py-1.5 rounded-lg hover:bg-slate-200/60 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>대화 초기화</span>
+          </button>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-slate-50/40">
+          <!-- Initial Welcome Message injected by JS -->
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="p-3 sm:p-4 bg-white border-t border-slate-200/80">
+          <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-end gap-2">
+            <div class="flex-1 relative">
+              <textarea
+                id="chat-input"
+                rows="1"
+                placeholder="예: 보증금 2000/월세 85 이하 원룸 추천해 주세요, HUG 전세보증보험 되나요?"
+                class="w-full resize-none rounded-xl border border-slate-300 focus:border-navy-800 focus:ring-2 focus:ring-navy-800/10 px-4 py-3 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all max-h-32"
+                onkeydown="handleInputKeydown(event)"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              id="btn-send"
+              class="px-5 py-3 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-semibold text-sm transition-all flex items-center gap-2 shrink-0 shadow-sm disabled:opacity-50"
+            >
+              <span>전송</span>
+              <i class="fa-solid fa-paper-plane text-xs text-amber-400"></i>
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== VIEW 2: PROPERTY ADMIN DB PANEL ==================== -->
+    <div id="view-admin" class="hidden flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+      <!-- Admin Header -->
+      <div class="px-5 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-navy-900 flex items-center gap-2">
+            <i class="fa-solid fa-database text-amber-500"></i>
+            보유 매물 데이터베이스 관리 (중개사 전용)
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">등록된 매물은 AI 챗봇 상담 시 고객 조건에 맞춰 실시간으로 추천됩니다. (브라우저 자동 저장)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetDefaultProperties()" class="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors">
+            <i class="fa-solid fa-clock-rotate-left mr-1"></i>기본 샘플 복원
+          </button>
+          <button onclick="openPropertyModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i>
+            <span>신규 매물 등록</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="px-5 py-3 border-b border-slate-100 flex flex-wrap items-center gap-2 bg-white">
+        <span class="text-xs font-semibold text-slate-500 mr-1">유형 필터:</span>
+        <button onclick="filterAdminList('ALL')" id="filter-ALL" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-white">전체</button>
+        <button onclick="filterAdminList('오피스텔')" id="filter-오피스텔" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">오피스텔</button>
+        <button onclick="filterAdminList('상가')" id="filter-상가" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">단지 내 상가</button>
+      </div>
+
+      <!-- Property Table / Cards Grid -->
+      <div class="flex-1 overflow-y-auto p-5">
+        <div id="admin-property-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== MODAL 1: ADD / EDIT PROPERTY ==================== -->
+  <div id="property-modal" class="fixed inset-0 bg-navy-950/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn">
+      <div class="px-5 py-4 bg-navy-900 text-white flex items-center justify-between">
+        <h3 id="property-modal-title" class="text-base font-bold flex items-center gap-2">
+          <i class="fa-solid fa-house-circle-check text-amber-400"></i>
+          <span>신규 매물 등록</span>
+        </h3>
+        <button onclick="closePropertyModal()" class="text-slate-300 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="property-form" onsubmit="saveProperty(event)" class="p-5 space-y-4">
+        <input type="hidden" id="prop-id" />
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">매물 구분 *</label>
+            <select id="prop-category" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none">
+              <option value="오피스텔">오피스텔 (스칸센)</option>
+              <option value="상가">단지 내 상가</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">거래 유형 *</label>
+            <select id="prop-dealType" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none">
+              <option value="월세">월세</option>
+              <option value="전세">전세</option>
+              <option value="매매">매매</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">동/호수 및 타입 *</label>
+            <input type="text" id="prop-title" required placeholder="예: A동 고층 (원룸 A타입)" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">전용면적 / 층수 *</label>
+            <input type="text" id="prop-spec" required placeholder="예: 전용 24㎡ / 18층" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">금액 조건 (보증금/월세 또는 매매가) *</label>
+          <input type="text" id="prop-price" required placeholder="예: 보증금 2,000만원 / 월세 85만원" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">입주 가능일 / 권리·특징 요약 *</label>
+          <textarea id="prop-features" rows="3" required placeholder="예: 즉시입주 가능, 풀옵션(빌트인 세탁기·건조기·냉장고), 남향 채광 우수, HUG 전세보증보험 가능" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:border-navy-800 outline-none"></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closePropertyModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50">취소</button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-semibold shadow-sm">매물 저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: CONSULTATION SUMMARY & RESERVATION RECEIPT ==================== -->
+  <div id="summary-modal" class="fixed inset-0 bg-navy-950/60 backdrop-blur-xs z-40 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 bg-navy-900 text-white flex items-center justify-between shrink-0">
+        <h3 class="text-base font-bold flex items-center gap-2">
+          <i class="fa-solid fa-file-contract text-amber-400"></i>
+          <span>상담 요약 및 방문 임장 예약 접수증</span>
+        </h3>
+        <button onclick="closeSummaryModal()" class="text-slate-300 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-4">
+        <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          현재까지 진행된 AI 상담 내용을 바탕으로 고객 희망 조건을 자동 요약하거나 직접 수정하여 카카오톡/문자/고객관리장(CRM)에 바로 붙여넣을 수 있습니다.
+        </p>
+
+        <!-- Auto-extract button -->
+        <div class="flex justify-end">
+          <button id="btn-ai-summarize" onclick="generateAISummary()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>AI로 대화 내용 자동 요약하기</span>
+          </button>
+        </div>
+
+        <!-- Editable Receipt Box -->
+        <div class="bg-amber-50/50 border border-amber-200 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
+            <span class="text-xs font-bold text-navy-900">[삼송역스칸센파인공인중개사사무소 상담 접수증]</span>
+            <span id="receipt-date" class="text-[11px] text-slate-500"></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">고객명 / 연락처</label>
+              <input type="text" id="sum-client" placeholder="예: 홍길동 / 010-1234-5678" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs focus:border-navy-800 outline-none" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">희망 입주/계약 시기</label>
+              <input type="text" id="sum-moveDate" placeholder="예: 12월 중순 / 즉시 입주" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs focus:border-navy-800 outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">희망 조건 및 예산</label>
+            <input type="text" id="sum-budget" placeholder="예: 오피스텔 월세 2,000/85만원 선, 고층 선호" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs focus:border-navy-800 outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">관심 매물 및 상담 요약 메모</label>
+            <textarea id="sum-notes" rows="4" placeholder="상담 중 추천된 관심 매물과 특이사항이 정리됩니다." class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs focus:border-navy-800 outline-none"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+        <span class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot text-emerald-600 mr-1"></i>삼송로 240, 201동 1층 상가 113호</span>
+        <div class="flex items-center gap-2">
+          <button onclick="closeSummaryModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100">닫기</button>
+          <button onclick="copyReceiptToClipboard()" class="px-4 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+            <i class="fa-regular fa-copy text-amber-400"></i>
+            <span>접수증 텍스트 복사</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden textarea for reliable clipboard copy inside iframes -->
+  <textarea id="clipboard-helper" class="sr-only" aria-hidden="true"></textarea>
+
+  <script>
+    // ==================== 1. INITIAL SAMPLE DATA & STATE ====================
+    const STORAGE_KEY = 'fine_realestate_properties_v1';
+
+    const DEFAULT_PROPERTIES = [
+      {
+        id: 'PROP-101',
+        category: '오피스텔',
+        dealType: '월세',
+        title: '스칸센 A동 고층 (원룸 A타입)',
+        spec: '전용 24.5㎡ / 20층',
+        price: '보증금 2,000만원 / 월세 85만원',
+        features: '즉시입주 가능, 풀옵션(빌트인 세탁기·건조기·냉장고·시스템에어컨), 탁 트인 남향 조망, 커뮤니티(수영장·피트니스) 이용 편리'
+      },
+      {
+        id: 'PROP-102',
+        category: '오피스텔',
+        dealType: '월세',
+        title: '스칸센 B동 중층 (1.5룸 분리형)',
+        spec: '전용 29.8㎡ / 12층',
+        price: '보증금 3,000만원 / 월세 105만원',
+        features: '거실·침실 분리형 구조, 신혼부부 및 직장인 인기 타입, 융자 없음, 전입신고 및 확정일자 가능, 12월 초 입주 협의'
+      },
+      {
+        id: 'PROP-103',
+        category: '오피스텔',
+        dealType: '전세',
+        title: '스칸센 A동 로열층 (원룸 B타입)',
+        spec: '전용 25.1㎡ / 17층',
+        price: '전세 1억 9,500만원',
+        features: 'HUG 전세보증보험 가입 가능 매물, 선순위 근저당 말소 조건, 깨끗한 첫 입주 컨디션, 삼송역 도보권 역세권'
+      },
+      {
+        id: 'PROP-104',
+        category: '오피스텔',
+        dealType: '매매',
+        title: '스칸센 B동 급매 (원룸 수익형)',
+        spec: '전용 24.5㎡ / 15층',
+        price: '매매 2억 3,500만원',
+        features: '현재 보증금 2,000만원/월세 85만원 임차인 승계 조건, 안정적인 임대수익률 확보, 일반임대사업자 포괄양수도 협의 가능'
+      },
+      {
+        id: 'PROP-201',
+        category: '상가',
+        dealType: '월세',
+        title: '단지 내 201동 1층 메인 코너 상가 (113호 인근)',
+        spec: '전용 38.2㎡ / 1층',
+        price: '보증금 4,000만원 / 월세 260만원 (부가세 별도)',
+        features: '2,513세대 대단지 주출입구 동선 확보, 테이크아웃 카페·베이커리·네일샵·부동산·편의점 추천, 무권리 신규 입점 가능'
+      },
+      {
+        id: 'PROP-202',
+        category: '상가',
+        dealType: '월세',
+        title: '단지 내 1층 테라스형 스트리트 상가',
+        spec: '전용 45.0㎡ / 1층',
+        price: '보증금 5,000만원 / 월세 310만원 (부가세 별도)',
+        features: '전면 데크 공간 활용 가능, 음식점·분식·세탁편의점·학원 추천, 냉난방기 완비, 주차 지원 우수'
+      }
+    ];
+
+    let properties = [];
+    let currentAdminFilter = 'ALL';
+    let chatHistory = [];
+    let isWaitingForAI = false;
+
+    // ==================== 2. INITIALIZATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProperties();
+      renderAdminProperties();
+      initWelcomeMessage();
+    });
+
+    function loadProperties() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          properties = JSON.parse(saved);
+        } else {
+          properties = [...DEFAULT_PROPERTIES];
+          saveToLocalStorage();
+        }
+      } catch (e) {
+        properties = [...DEFAULT_PROPERTIES];
+      }
+      updatePropertyCountBadge();
+    }
+
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
+      } catch (e) {
+        console.warn('localStorage 저장 실패:', e);
+      }
+      updatePropertyCountBadge();
+    }
+
+    function updatePropertyCountBadge() {
+      const badge = document.getElementById('property-count-badge');
+      if (badge) badge.textContent = properties.length;
+    }
+
+    // ==================== 3. UI & NAVIGATION HELPERS ====================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error' ? 'bg-red-600' : (type === 'info' ? 'bg-navy-900' : 'bg-emerald-600');
+      const icon = type === 'error' ? 'fa-circle-exclamation' : (type === 'info' ? 'fa-circle-info' : 'fa-circle-check');
+
+      toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium flex items-center gap-2.5 pointer-events-auto transition-all transform translate-y-0 opacity-100`;
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function switchTab(tabName) {
+      const viewChat = document.getElementById('view-chat');
+      const viewAdmin = document.getElementById('view-admin');
+      const btnChat = document.getElementById('btn-tab-chat');
+      const btnAdmin = document.getElementById('btn-tab-admin');
+
+      if (tabName === 'chat') {
+        viewChat.classList.remove('hidden');
+        viewAdmin.classList.add('hidden');
+        btnChat.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm';
+        btnAdmin.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-navy-800 text-slate-300 hover:bg-navy-700 hover:text-white border border-navy-700';
+      } else {
+        viewChat.classList.add('hidden');
+        viewAdmin.classList.remove('hidden');
+        btnAdmin.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm';
+        btnChat.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-navy-800 text-slate-300 hover:bg-navy-700 hover:text-white border border-navy-700';
+        renderAdminProperties();
+      }
+    }
+
+    // ==================== 4. CHATBOT LOGIC & GEMINI API ====================
+    function initWelcomeMessage() {
+      const chatBox = document.getElementById('chat-messages');
+      chatBox.innerHTML = '';
+      chatHistory = [];
+
+      const welcomeText = `안녕하세요! **삼송역스칸센파인공인중개사사무소(파인부동산)** AI 전문 상담사입니다. 🏢✨
+
+**경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호** (지번: 삼송동 294, 3호선 삼송역 6번 출구 인근)에 위치해 있으며, **오피스텔(월세·전세·매매) 및 단지 내 상가 임대·창업 상담**을 도와드리고 있습니다.
+
+원하시는 **예산, 평형(원룸/1.5룸/상가), 입주 희망일**을 말씀해 주시면 현재 보유 중인 최적의 매물을 바로 추천해 드립니다!`;
+
+      appendBotMessage(welcomeText, [properties[0], properties[2], properties[4]].filter(Boolean));
+    }
+
+    function resetChat() {
+      initWelcomeMessage();
+      showToast('상담 대화가 초기화되었습니다.', 'info');
+    }
+
+    function sendQuickPrompt(promptText) {
+      if (isWaitingForAI) return;
+      document.getElementById('chat-input').value = promptText;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    function handleInputKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleChatSubmit(e);
+      }
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      if (isWaitingForAI) return;
+
+      const inputEl = document.getElementById('chat-input');
+      const userMessage = inputEl.value.trim();
+      if (!userMessage) return;
+
+      inputEl.value = '';
+      appendUserMessage(userMessage);
+      chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+
+      setLoadingState(true);
+      const typingId = appendTypingIndicator();
+
+      try {
+        const aiResponse = await callGeminiConsultant(userMessage);
+        removeElement(typingId);
+
+        // Parse recommended property IDs from AI response if any
+        const { cleanText, matchedProperties } = extractPropertyCardsFromResponse(aiResponse);
+        appendBotMessage(cleanText, matchedProperties);
+
+        chatHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
+      } catch (err) {
+        removeElement(typingId);
+        console.error('AI 상담 오류:', err);
+        appendBotMessage('죄송합니다. 일시적인 통신 지연이 발생했습니다. 잠시 후 다시 질문해 주시거나, 상단의 **[상담 요약·예약 접수증]**을 통해 방문 예약을 남겨주시면 대표 공인중개사가 직접 연락드리겠습니다.', []);
+      } finally {
+        setLoadingState(false);
+      }
+    }
+
+    function setLoadingState(loading) {
+      isWaitingForAI = loading;
+      document.getElementById('btn-send').disabled = loading;
+    }
+
+    /**
+     * Gemini API 호출 함수 (지수 백오프 적용)
+     */
+    async function callGeminiConsultant(latestUserPrompt) {
+      const apiKey = ""; // 런타임 자동 주입
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const propertyDbJson = JSON.stringify(properties, null, 2);
+
+      const systemInstructionText = `당신은 경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호(지번: 삼송동 294, 힐스테이트 삼송역 스칸센 단지 내, 3호선 삼송역 6번 출구 인근)에 위치한 '삼송역스칸센파인공인중개사사무소(파인부동산)'의 수석 공인중개사 AI 상담 어시스턴트입니다.
+
+[상담 원칙 및 어조]
+1. 항상 정중하고 신뢰감 있으며 전문적인 한국어(존댓말)로 응대하세요.
+2. 힐스테이트 삼송역 스칸센(2,513세대 대단지 오피스텔 및 단지 내 상가)의 입지적 장점(3호선 삼송역 역세권, 스타필드 고양 인접, 수영장·피트니스 등 우수한 커뮤니티 시설)을 자연스럽게 녹여 설명하세요.
+3. 고객이 매물을 찾거나 조건을 말하면 아래 [현재 보유 매물 데이터베이스]에서 가장 적합한 매물을 골라 친절히 안내하세요.
+4. 중요 규칙: 추천할 매물이 있다면, 답변의 맨 마지막 줄에 반드시 다음 형식으로 매물 ID 태그를 포함하세요. (예: [RECOMMEND: PROP-101, PROP-102])
+   - 추천할 매물이 딱히 없거나 일반 정보(보증보험, 세무 등)만 묻는 경우 태그를 생략하거나 가장 관련 있는 대표 매물 1개만 선택적으로 태그하세요.
+5. 전세보증보험(HUG/SGI) 문의 시: 오피스텔은 주거용으로 사용 시 가입 가능하며, ① 선순위 근저당 및 보증금 합계가 주택가격(공시가격의 126% 등 기준) 이내일 것, ② 전입신고 및 확정일자 필수, ③ 임대인의 세금 체납이 없을 것 등의 핵심 요건을 알기 쉽게 안내하세요.
+6. 상가 임대·창업 상담 시: 2,513세대 고정 배후수요의 강점과 업종 추천(카페, 편의점, 미용·네일, 세탁, 부동산, 병의원 등), 부가세 별도 조건, 권리금 여부 등을 꼼꼼히 안내하세요.
+7. 방문 임장이나 대면 상담을 원할 경우, 고객의 성함, 연락처, 희망 방문일시를 여쭤보고 상단의 [상담 요약·예약 접수증] 버튼을 활용하도록 안내하세요.
+
+[현재 보유 매물 데이터베이스]
+${propertyDbJson}`;
+
+      // 최근 대화 10턴까지만 유지하여 컨텍스트 최적화
+      const recentContents = chatHistory.slice(-10);
+
+      const payload = {
+        contents: recentContents,
+        systemInstruction: {
+          parts: [{ text: systemInstructionText }]
+        }
+      };
+
+      const delays = [1000, 2000, 4000];
+      for (let attempt = 0; attempt <= delays.length; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) return text;
+          throw new Error('Empty AI response');
+        } catch (error) {
+          if (attempt === delays.length) throw error;
+          await new Promise(res => setTimeout(res, delays[attempt]));
+        }
+      }
+    }
+
+    function extractPropertyCardsFromResponse(rawText) {
+      const regex = /\[RECOMMEND:\s*([^\]]+)\]/i;
+      const match = rawText.match(regex);
+      let cleanText = rawText.replace(regex, '').trim();
+      let matchedProperties = [];
+
+      if (match && match[1]) {
+        const ids = match[1].split(',').map(s => s.trim());
+        matchedProperties = properties.filter(p => ids.includes(p.id));
+      }
+      return { cleanText, matchedProperties };
+    }
+
+    // ==================== 5. CHAT MESSAGE RENDERING ====================
+    function formatMarkdownToHtml(text) {
+      // Safe HTML escaping first
+      let escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Bold **text**
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-navy-900">$1</strong>');
+      // Bullet points
+      escaped = escaped.replace(/^\s*[\-\*]\s+(.*)$/gm, '<li class="ml-4 list-disc">$1</li>');
+      // Line breaks
+      escaped = escaped.replace(/\n/g, '<br />');
+      return escaped;
+    }
+
+    function appendUserMessage(text) {
+      const chatBox = document.getElementById('chat-messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex justify-end';
+      wrapper.innerHTML = `
+        <div class="max-w-[85%] sm:max-w-[75%] bg-navy-900 text-white rounded-2xl rounded-tr-xs px-4 py-3 shadow-xs text-sm leading-relaxed">
+          ${formatMarkdownToHtml(text)}
+        </div>
+      `;
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function appendBotMessage(text, recommendedProps = []) {
+      const chatBox = document.getElementById('chat-messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex items-start gap-2.5';
+
+      let cardsHtml = '';
+      if (recommendedProps && recommendedProps.length > 0) {
+        cardsHtml = `
+          <div class="mt-3 pt-3 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${recommendedProps.map(prop => renderPropertyChatCard(prop)).join('')}
+          </div>
+        `;
+      }
+
+      wrapper.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-navy-900 text-amber-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+          파인
+        </div>
+        <div class="max-w-[90%] sm:max-w-[82%] bg-white border border-slate-200/90 text-slate-700 rounded-2xl rounded-tl-xs px-4 py-3.5 shadow-xs text-sm leading-relaxed">
+          <div>${formatMarkdownToHtml(text)}</div>
+          ${cardsHtml}
+        </div>
+      `;
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function renderPropertyChatCard(prop) {
+      const badgeColor = prop.category === '상가'
+        ? 'bg-amber-100 text-amber-800 border-amber-200'
+        : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      const dealColor = prop.dealType === '매매'
+        ? 'bg-navy-900 text-white'
+        : 'bg-slate-800 text-amber-300';
+
+      return `
+        <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3 hover:border-amber-400 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md border ${badgeColor}">${prop.category}</span>
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md ${dealColor}">${prop.dealType}</span>
+            </div>
+            <h4 class="text-xs sm:text-sm font-bold text-navy-900 line-clamp-1">${prop.title}</h4>
+            <p class="text-xs font-bold text-emerald-700 mt-1">${prop.price}</p>
+            <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-ruler-combined mr-1"></i>${prop.spec}</p>
+            <p class="text-[11px] text-slate-600 mt-1.5 line-clamp-2 leading-snug">${prop.features}</p>
+          </div>
+          <button
+            onclick="inquireSpecificProperty('${prop.id}')"
+            class="mt-2.5 w-full py-1.5 px-2.5 rounded-lg bg-white hover:bg-navy-900 text-navy-900 hover:text-white border border-slate-300 text-[11px] font-semibold transition-colors flex items-center justify-center gap-1"
+          >
+            <i class="fa-solid fa-calendar-check text-amber-500"></i>
+            <span>이 매물 방문 임장 신청</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function inquireSpecificProperty(propId) {
+      const prop = properties.find(p => p.id === propId);
+      if (!prop) return;
+      const msg = `'${prop.title} (${prop.price})' 매물에 대해 더 자세히 알고 싶고, 방문 임장 예약을 신청하고 싶습니다.`;
+      sendQuickPrompt(msg);
+    }
+
+    function appendTypingIndicator() {
+      const chatBox = document.getElementById('chat-messages');
+      const id = 'typing-' + Date.now();
+      const wrapper = document.createElement('div');
+      wrapper.id = id;
+      wrapper.className = 'flex items-start gap-2.5';
+      wrapper.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-navy-900 text-amber-400 flex items-center justify-center text-xs font-bold shrink-0">
+          파인
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-xs px-4 py-3.5 shadow-xs flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-slate-400 typing-dot"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-400 typing-dot"></span>
+          <span class="w-2 h-2 rounded-full bg-slate-400 typing-dot"></span>
+        </div>
+      `;
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return id;
+    }
+
+    function removeElement(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    // ==================== 6. PROPERTY ADMIN DB CRUD ====================
+    function filterAdminList(category) {
+      currentAdminFilter = category;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200';
+      });
+      const activeBtn = document.getElementById(`filter-${category}`);
+      if (activeBtn) {
+        activeBtn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-white';
+      }
+      renderAdminProperties();
+    }
+
+    function renderAdminProperties() {
+      const grid = document.getElementById('admin-property-grid');
+      const filtered = currentAdminFilter === 'ALL'
+        ? properties
+        : properties.filter(p => p.category === currentAdminFilter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-slate-400">
+            <i class="fa-regular fa-folder-open text-3xl mb-2"></i>
+            <p class="text-sm">등록된 매물이 없습니다. 우측 상단의 [신규 매물 등록] 버튼을 눌러 매물을 추가해 주세요.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(prop => {
+        const catBadge = prop.category === '상가'
+          ? 'bg-amber-100 text-amber-800 border-amber-200'
+          : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+        return `
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="px-2 py-0.5 text-xs font-bold rounded-md border ${catBadge}">${prop.category}</span>
+                  <span class="px-2 py-0.5 text-xs font-bold rounded-md bg-navy-900 text-white">${prop.dealType}</span>
+                </div>
+                <span class="text-[11px] font-mono text-slate-400">${prop.id}</span>
+              </div>
+              <h3 class="text-base font-bold text-navy-900">${prop.title}</h3>
+              <p class="text-sm font-bold text-emerald-600 mt-1">${prop.price}</p>
+              <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-ruler-combined mr-1"></i>${prop.spec}</p>
+              <p class="text-xs text-slate-600 mt-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-relaxed">${prop.features}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button onclick="openPropertyModal('${prop.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                <i class="fa-solid fa-pen-to-square mr-1"></i>수정
+              </button>
+              <button onclick="deleteProperty('${prop.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold transition-colors">
+                <i class="fa-solid fa-trash-can mr-1"></i>삭제
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openPropertyModal(propId = null) {
+      const modal = document.getElementById('property-modal');
+      const titleEl = document.getElementById('property-modal-title');
+      const form = document.getElementById('property-form');
+      form.reset();
+
+      if (propId) {
+        const prop = properties.find(p => p.id === propId);
+        if (!prop) return;
+        titleEl.innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i><span>보유 매물 수정 (${prop.id})</span>`;
+        document.getElementById('prop-id').value = prop.id;
+        document.getElementById('prop-category').value = prop.category;
+        document.getElementById('prop-dealType').value = prop.dealType;
+        document.getElementById('prop-title').value = prop.title;
+        document.getElementById('prop-spec').value = prop.spec;
+        document.getElementById('prop-price').value = prop.price;
+        document.getElementById('prop-features').value = prop.features;
+      } else {
+        titleEl.innerHTML = `<i class="fa-solid fa-house-circle-check text-amber-400"></i><span>신규 매물 등록</span>`;
+        document.getElementById('prop-id').value = '';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePropertyModal() {
+      const modal = document.getElementById('property-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function saveProperty(e) {
+      e.preventDefault();
+      const id = document.getElementById('prop-id').value;
+      const newProp = {
+        id: id || 'PROP-' + Math.floor(100 + Math.random() * 900),
+        category: document.getElementById('prop-category').value,
+        dealType: document.getElementById('prop-dealType').value,
+        title: document.getElementById('prop-title').value.trim(),
+        spec: document.getElementById('prop-spec').value.trim(),
+        price: document.getElementById('prop-price').value.trim(),
+        features: document.getElementById('prop-features').value.trim(),
+      };
+
+      if (id) {
+        const idx = properties.findIndex(p => p.id === id);
+        if (idx !== -1) properties[idx] = newProp;
+        showToast('매물 정보가 수정되었습니다.');
+      } else {
+        properties.unshift(newProp);
+        showToast('신규 매물이 등록되었습니다.');
+      }
+
+      saveToLocalStorage();
+      renderAdminProperties();
+      closePropertyModal();
+    }
+
+    function deleteProperty(propId) {
+      properties = properties.filter(p => p.id !== propId);
+      saveToLocalStorage();
+      renderAdminProperties();
+      showToast('매물이 목록에서 삭제되었습니다.', 'info');
+    }
+
+    function resetDefaultProperties() {
+      properties = [...DEFAULT_PROPERTIES];
+      saveToLocalStorage();
+      renderAdminProperties();
+      showToast('기본 샘플 매물 데이터로 복원되었습니다.', 'info');
+    }
+
+    // ==================== 7. SUMMARY & RESERVATION RECEIPT MODAL ====================
+    function openSummaryModal() {
+      const modal = document.getElementById('summary-modal');
+      const now = new Date();
+      document.getElementById('receipt-date').textContent = now.toLocaleDateString('ko-KR', {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+      });
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSummaryModal() {
+      const modal = document.getElementById('summary-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function generateAISummary() {
+      if (chatHistory.length === 0) {
+        showToast('먼저 고객과 상담 대화를 진행해 주세요.', 'info');
+        return;
+      }
+
+      const btn = document.getElementById('btn-ai-summarize');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>대화 분석 중...</span>`;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const transcript = chatHistory.map(m => `${m.role === 'user' ? '고객' : '상담사'}: ${m.parts[0].text}`).join('\n');
+        const prompt = `다음 부동산 상담 대화 내역을 분석하여 아래 JSON 스키마에 맞춰 고객 희망 조건을 추출해 주세요. 언급되지 않은 항목은 '미정 (상담 시 확인)'으로 표기하세요.\n\n[대화 내역]\n${transcript}`;
+
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                clientInfo: { type: "STRING", description: "고객 성함 및 연락처 (없으면 '미입력')" },
+                moveDate: { type: "STRING", description: "희망 입주시기 또는 방문예약 일시" },
+                budgetAndCond: { type: "STRING", description: "희망 매물 종류(오피스텔/상가), 거래유형, 예산 범위" },
+                summaryNotes: { type: "STRING", description: "추천된 관심 매물명 및 주요 상담 요구사항 2~3줄 요약" }
+              },
+              required: ["clientInfo", "moveDate", "budgetAndCond", "summaryNotes"]
+            }
+          }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (jsonText) {
+          const parsed = JSON.parse(jsonText);
+          document.getElementById('sum-client').value = parsed.clientInfo || '';
+          document.getElementById('sum-moveDate').value = parsed.moveDate || '';
+          document.getElementById('sum-budget').value = parsed.budgetAndCond || '';
+          document.getElementById('sum-notes').value = parsed.summaryNotes || '';
+          showToast('AI가 상담 내역을 자동으로 요약했습니다!');
+        }
+      } catch (e) {
+        console.error('요약 오류:', e);
+        showToast('요약 생성 중 오류가 발생했습니다. 직접 입력해 주세요.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    function copyReceiptToClipboard() {
+      const dateStr = document.getElementById('receipt-date').textContent;
+      const client = document.getElementById('sum-client').value || '미입력';
+      const moveDate = document.getElementById('sum-moveDate').value || '협의';
+      const budget = document.getElementById('sum-budget').value || '상담 후 결정';
+      const notes = document.getElementById('sum-notes').value || '특이사항 없음';
+
+      const receiptText = `[삼송역스칸센파인공인중개사사무소 상담·임장 접수증]
+■ 접수일시: ${dateStr}
+■ 사무소위치: 경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (지번: 삼송동 294, 삼송역 6번 출구 인근)
+----------------------------------------
+• 고객명/연락처: ${client}
+• 희망 입주/방문일: ${moveDate}
+• 희망 조건/예산: ${budget}
+• 관심 매물 및 상담 요약:
+${notes}
+----------------------------------------
+* 방문 전 연락 주시면 대기 없이 바로 현장 안내 도와드리겠습니다.`;
+
+      const helper = document.getElementById('clipboard-helper');
+      helper.value = receiptText;
+      helper.select();
+      try {
+        document.execCommand('copy');
+        showToast('상담 요약 접수증이 클립보드에 복사되었습니다!');
+      } catch (err) {
+        showToast('복사에 실패했습니다. 텍스트를 직접 선택해 복사해 주세요.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
