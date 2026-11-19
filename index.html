@@ -72,11 +72,10 @@ class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white" />
 <label class="block font-bold text-slate-700 mb-1">매물분류</label>
 <select id="filterCategory" onchange="renderListingCards()" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white">
 <option value="전체">전체 분류</option>
-<option value="상가점포">상가점포</option>
-<option value="아파트">아파트</option>
-<option value="오피스텔">오피스텔</option>
 <option value="상가">상가</option>
+<option value="오피스텔">오피스텔</option>
 <option value="사무실">사무실</option>
+<option value="아파트">아파트</option>
 <option value="빌라">빌라</option>
 <option value="단독/다가구주택">단독/다가구주택</option>
 </select>
@@ -124,7 +123,7 @@ class="w-full border border-slate-300 rounded-lg px-2 py-2 bg-white text-center"
 <div>
 <h2 class="font-bold text-[#0f2544] text-base">📊 구글 스프레드시트(Google Sheets) 실시간 자동 연동</h2>
 <p class="text-xs text-slate-600 mt-0.5">
-구글 시트 메뉴 <strong>[파일 → 공유 → 웹에 게시 → 쉼표로 구분된 값(.csv)]</strong>에서 발급된 URL을 아래에 1회 저장해 두면, 이후에는 시트만 수정해도 모든 고객 화면에 즉시 반영됩니다.
+구글 시트 메뉴 <strong>[파일 → 공유 → 웹에 게시 → 쉼표로 구분된 값(.csv)]</strong>에서 발급된 URL을 아래에 1회 저장해 두면, 이후에는 시트만 수정해도 모든 고객 화면에 즉시 반영됩니다. (시트의 '상가점포'는 자동으로 '상가'로 통합 표시됩니다.)
 </p>
 </div>
 <button type="button" onclick="lockAdminSession()"
@@ -314,8 +313,8 @@ class="flex-1 bg-[#0f2544] hover:bg-slate-800 text-white font-bold text-xs py-2.
 </div>
 
 <script>
-const STORAGE_KEY_ITEMS = 'fine_gsheet_items_v1';
-const STORAGE_KEY_CFG = 'fine_gsheet_cfg_v1';
+const STORAGE_KEY_ITEMS = 'fine_gsheet_items_v2';
+const STORAGE_KEY_CFG = 'fine_gsheet_cfg_v2';
 let adminUnlocked = false;
 
 const DEFAULT_CONFIG = {
@@ -327,11 +326,11 @@ adminPin: '0075',
 sheetCsvUrl: ''
 };
 
-// 구글 시트 미연결 시 기본 표시용 초기 매물 (세부 동·호수 제외)
+// 구글 시트 미연결 시 기본 표시용 초기 매물 (상가점포 -> 상가 통합, 세부 동·호수 제외)
 const INITIAL_FALLBACK_ITEMS = [
 {
 id: '2656903157',
-category: '상가점포',
+category: '상가',
 dealType: '매매',
 areaRaw: '76.69(㎡)',
 areaNum: 76.69,
@@ -347,7 +346,7 @@ naverUrl: ''
 },
 {
 id: '2656903271',
-category: '상가점포',
+category: '상가',
 dealType: '월세',
 areaRaw: '66.00(㎡)',
 areaNum: 66.0,
@@ -411,6 +410,14 @@ naverUrl: ''
 }
  ];
 
+// 상가점포 등 상가 세부 분류를 '상가' 하나로 통합 정규화
+function normalizeCategory(rawCat) {
+const val = String(rawCat || '').trim();
+if (!val) return '기타';
+if (val === '상가점포' || val.includes('상가')) return '상가';
+return val;
+}
+
 function getConfig() {
 try {
 const saved = localStorage.getItem(STORAGE_KEY_CFG);
@@ -460,11 +467,14 @@ alert('설정이 저장되었습니다.');
 function getItems() {
 try {
 const saved = localStorage.getItem(STORAGE_KEY_ITEMS);
+const rawList = saved ? JSON.parse(saved) : [...INITIAL_FALLBACK_ITEMS];
 if (!saved) {
-localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(INITIAL_FALLBACK_ITEMS));
-return [...INITIAL_FALLBACK_ITEMS];
+localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(rawList));
 }
-return JSON.parse(saved);
+return rawList.map(item => ({
+...item,
+category: normalizeCategory(item.category)
+}));
 } catch (e) {
 return [...INITIAL_FALLBACK_ITEMS];
 }
@@ -529,7 +539,7 @@ return 'https://new.land.naver.com/';
 
 function mapSheetRowToItem(r, idx) {
 const id = String(r['네이버매물번호'] || r['매물번호'] || row-${idx + 1}`).trim();
-const category = String(r['매물분류'] || r['종류'] || '기타').trim();
+const category = normalizeCategory(r['매물분류'] || r['종류'] || '기타');
 const dealType = String(r['거래종류'] || r['거래유형'] || '').trim();
 const areaRaw = String(r['면적'] || r['계약면적'] || r['전용면적'] || '').trim();
 const areaNum = parseAreaNum(areaRaw);
@@ -579,7 +589,6 @@ pill.textContent = '⏳ 시트 동기화 중...';
 pill.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
 
 try {
-// 브라우저 캐시 우회를 위해 타임스탬프 쿼리 추가
 const cacheBuster = (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
 const response = await fetch(url + cacheBuster);
 if (!response.ok) {
@@ -598,7 +607,7 @@ const mapped = rows
 localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(mapped));
 
 const nowTime = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-pill.textContent = 🟢 구글 시트 실시간 연동됨 (${nowTime}); pill.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800'; if (logEl) { logEl.textContent =✅ 구글 스프레드시트 동기화 완료: 총 ${mapped.length}건 불러옴 (동·호수 세부주소 자동 제외됨);
+pill.textContent = 🟢 구글 시트 실시간 연동됨 (${nowTime}); pill.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800'; if (logEl) { logEl.textContent =✅ 구글 스프레드시트 동기화 완료: 총 ${mapped.length}건 불러옴 (상가점포→상가 통합, 동·호수 세부주소 자동 제외됨);
 }
 
 renderListingCards();
@@ -743,7 +752,8 @@ const maxArea = parseFloat(document.getElementById('filterMaxArea').value);
 const moveIn = document.getElementById('filterMoveIn').value;
 
 return getItems().filter(item => {
-if (cat !== '전체' && item.category !== cat) return false;
+const normalizedCat = normalizeCategory(item.category);
+if (cat !== '전체' && normalizedCat !== cat) return false;
 if (deal !== '전체' && item.dealType !== deal) return false;
 
 if (!isNaN(minArea) && minArea > 0 && item.areaNum < minArea) return false;
@@ -775,7 +785,8 @@ return;
 }
 
 container.innerHTML = items.map((item, idx) => {
-const pyeong = item.areaNum ? (약 ${(item.areaNum / 3.3058).toFixed(1)}평): ''; const safeLabel = ``${item.locationPublic} · ${item.category} · ${item.dealType} · 계약면적 ${item.areaRaw}`.replace(/'/g, "\'");
+const catLabel = normalizeCategory(item.category);
+const pyeong = item.areaNum ? (약 ${(item.areaNum / 3.3058).toFixed(1)}평): ''; const safeLabel = ``${item.locationPublic} · ${catLabel} · ${item.dealType} · 계약면적 ${item.areaRaw}`.replace(/'/g, "\'");
 
 return &lt;div class="bg-white rounded-2xl shadow-sm border border-slate-200 hover:border-blue-300 p-4 flex flex-col justify-between gap-3 transition"&gt; &lt;div class="space-y-2"&gt; &lt;div class="flex items-start justify-between gap-2"&gt; &lt;div class="flex flex-wrap items-center gap-1.5"&gt; &lt;span class="bg-[#0f2544] text-white text-[11px] font-bold px-2 py-0.5 rounded"&gt;#${idx + 1}</span>
 <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[11px] font-bold px-2 py-0.5 rounded">{item.dealType}</span>
@@ -807,10 +818,11 @@ function openDetailModal(id) {
 const item = getItems().find(x => String(x.id) === String(id));
 if (!item) return;
 
-const pyeong = item.areaNum ? (약${(item.areaNum / 3.3058).toFixed(1)}평): ''; const naverUrl = buildNaverDetailUrl(item); const safeLabel ={item.category} · {item.areaRaw}`.replace(/'/g, "\'");
+const catLabel = normalizeCategory(item.category);
+const pyeong = item.areaNum ? (약${(item.areaNum / 3.3058).toFixed(1)}평): ''; const naverUrl = buildNaverDetailUrl(item); const safeLabel ={catLabel} · {item.areaRaw}`.replace(/'/g, "\'");
 
 document.getElementById('detailModalBody').innerHTML = &lt;div class="bg-slate-50 rounded-xl p-3.5 space-y-2 border border-slate-200"&gt; &lt;div class="flex items-center justify-between"&gt; &lt;span class="font-bold text-[#0f2544] text-sm"&gt;${item.locationPublic}</span>
-<span class="font-bold text-emerald-700 text-sm">${item.priceFormatted}&lt;/span&gt; &lt;/div&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;매물분류 / 거래종류:&lt;/strong&gt; ${item.category} / ${item.dealType}&lt;/p&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;계약면적:&lt;/strong&gt; ${item.areaRaw}${pyeong}&lt;/p&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;입주가능일:&lt;/strong&gt; ${item.moveInInfo}</p>
+<span class="font-bold text-emerald-700 text-sm">${item.priceFormatted}&lt;/span&gt; &lt;/div&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;매물분류 / 거래종류:&lt;/strong&gt; ${catLabel} / ${item.dealType}&lt;/p&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;계약면적:&lt;/strong&gt; ${item.areaRaw}${pyeong}&lt;/p&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;입주가능일:&lt;/strong&gt; ${item.moveInInfo}</p>
 <p class="text-slate-600"><strong>매물특징:</strong> ${item.feature || '-'}&lt;/p&gt; &lt;p class="text-slate-600"&gt;&lt;strong&gt;광고 노출기간:&lt;/strong&gt; ${item.exposurePeriod || '-'}</p>
 <div class="flex items-center justify-between pt-1 text-[11px] text-slate-500">
 <span>네이버 매물번호: <strong>${item.id}&lt;/strong&gt; (${item.verifyType || '확인매물'})</span>
