@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>삼송역스칸센파인공인중개사사무소 | 주소·종류·면적·입주일 맞춤검색 & AI 상담</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #f4f6f9; }
+    .chat-scroll::-webkit-scrollbar { width: 6px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+  <!-- 상단 헤더 (법정 중개사무소 필수 명시사항) -->
+  <header class="bg-[#0f2544] text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="bg-amber-400 text-[#0f2544] text-xs font-bold px-2 py-0.5 rounded">파인부동산 공식 AI 상담</span>
+          <h1 class="text-lg md:text-xl font-bold tracking-tight">삼송역스칸센파인공인중개사사무소</h1>
+        </div>
+        <p id="headerOfficeMeta" class="text-xs text-slate-300 mt-0.5">
+          경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송동 294, 삼송역 3호선 6번 출구 인근) | 대표: 노혜건 | 등록번호: 41281-2023-00075 | ☎ 02-381-4924
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" onclick="switchTab('chat')" id="tabChatBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 text-[#0f2544] transition">
+          🔍 매물 맞춤검색 · AI상담
+        </button>
+        <button type="button" onclick="switchTab('admin')" id="tabAdminBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white transition">
+          🔗 네이버 URL · 매물등록
+        </button>
+        <button type="button" onclick="openSummaryModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition">
+          📋 상담 요약·카톡 접수증
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-5">
+
+    <!-- [탭 1] 주소 · 부동산 종류별 · 면적(평) · 입주가능일(기간) 맞춤 검색 & AI 상담 -->
+    <section id="chatSection" class="space-y-5">
+
+      <!-- 상단 정밀 조건검색 필터 바 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5 space-y-3.5">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div>
+            <h2 class="font-bold text-[#0f2544] text-base flex items-center gap-1.5">
+              <span>🔍</span> 주소(소재지) · 부동산 종류 · 면적(평형) · 입주가능일 맞춤 검색
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">지역 주소, 부동산 종류, 전용면적(평 단위), 입주가능일을 조합해 조건에 맞는 매물 리스트를 바로 조회하세요.</p>
+          </div>
+          <!-- 부동산 종류 빠른 선택 버튼 -->
+          <div class="flex flex-wrap items-center gap-1.5" id="categoryPills">
+            <button type="button" onclick="quickFilterCategory('전체')" data-cat="전체" class="cat-pill px-2.5 py-1 rounded-full text-xs font-bold bg-[#0f2544] text-white transition">전체</button>
+            <button type="button" onclick="quickFilterCategory('오피스텔')" data-cat="오피스텔" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">🏢 오피스텔</button>
+            <button type="button" onclick="quickFilterCategory('상가')" data-cat="상가" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">🏪 상가</button>
+            <button type="button" onclick="quickFilterCategory('사무실')" data-cat="사무실" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">💼 사무실</button>
+            <button type="button" onclick="quickFilterCategory('아파트')" data-cat="아파트" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">🏙️ 아파트</button>
+            <button type="button" onclick="quickFilterCategory('빌라')" data-cat="빌라" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">🏘️ 빌라</button>
+            <button type="button" onclick="quickFilterCategory('단독/다가구주택')" data-cat="단독/다가구주택" class="cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">🏡 단독/다가구</button>
+          </div>
+        </div>
+
+        <!-- 세부 필터 입력 영역 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 items-end text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <!-- 1. 주소(소재지) 검색 -->
+          <div class="lg:col-span-4">
+            <div class="flex items-center justify-between mb-1">
+              <label class="font-bold text-slate-700">📍 주소 (시·구·동 / 도로명)</label>
+              <select id="addressPresetSelect" onchange="applyAddressPreset()" class="text-[11px] text-blue-700 bg-transparent font-semibold focus:outline-none cursor-pointer">
+                <option value="">주요지역 선택 ▾</option>
+                <option value="경기도 고양시 덕양구 삼송동">고양시 덕양구 삼송동</option>
+                <option value="경기도 고양시 덕양구 동산동">고양시 덕양구 동산동</option>
+                <option value="경기도 고양시 덕양구 원흥동">고양시 덕양구 원흥동</option>
+                <option value="경기도 고양시 덕양구 덕은동">고양시 덕양구 덕은동</option>
+                <option value="경기도 고양시 덕양구 대장동">고양시 덕양구 대장동</option>
+              </select>
+            </div>
+            <input id="searchAddress" type="text" oninput="runPropertySearch()" placeholder="예: 경기도 고양시 덕양구 삼송동"
+                   class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white" />
+          </div>
+
+          <!-- 2. 부동산 종류 -->
+          <div class="lg:col-span-2">
+            <label class="block font-bold text-slate-700 mb-1">부동산 종류</label>
+            <select id="searchCategory" onchange="runPropertySearch()" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white">
+              <option value="전체">전체 종류</option>
+              <option value="오피스텔">오피스텔</option>
+              <option value="상가">상가</option>
+              <option value="사무실">사무실</option>
+              <option value="아파트">아파트</option>
+              <option value="빌라">빌라</option>
+              <option value="단독/다가구주택">단독/다가구주택</option>
+            </select>
+          </div>
+
+          <!-- 3. 거래 형태 -->
+          <div class="lg:col-span-2">
+            <label class="block font-bold text-slate-700 mb-1">거래 형태</label>
+            <select id="searchDealType" onchange="runPropertySearch()" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white">
+              <option value="전체">전체 (월세·전세·매매)</option>
+              <option value="월세">월세</option>
+              <option value="전세">전세</option>
+              <option value="매매">매매</option>
+            </select>
+          </div>
+
+          <!-- 4. 전용면적 범위 (평 단위) -->
+          <div class="lg:col-span-4">
+            <div class="flex items-center justify-between mb-1">
+              <label class="font-bold text-slate-700">전용면적 (평)</label>
+              <select id="areaPresetSelect" onchange="applyAreaPreset()" class="text-[11px] text-blue-700 bg-transparent font-semibold focus:outline-none cursor-pointer">
+                <option value="">빠른구간 선택 ▾</option>
+                <option value="5-10">5평 ~ 10평</option>
+                <option value="10-20">10평 ~ 20평</option>
+                <option value="20-35">20평 ~ 35평</option>
+                <option value="35-999">35평 이상</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-1">
+              <input id="minPyeong" type="number" step="0.5" min="0" placeholder="최소(예:5)" oninput="runPropertySearch()"
+                     class="w-full border border-slate-300 rounded-lg px-2 py-2 bg-white text-center" />
+              <span class="text-slate-400 font-bold">~</span>
+              <input id="maxPyeong" type="number" step="0.5" min="0" placeholder="최대(예:10)" oninput="runPropertySearch()"
+                     class="w-full border border-slate-300 rounded-lg px-2 py-2 bg-white text-center" />
+              <span class="text-slate-600 font-semibold shrink-0">평</span>
+            </div>
+          </div>
+
+          <!-- 5. 입주가능일 조건 + 조회/초기화 버튼 -->
+          <div class="lg:col-span-4">
+            <label class="block font-bold text-slate-700 mb-1">입주가능일 (즉시 / 기간 지정)</label>
+            <select id="searchMoveInMode" onchange="toggleDateRangeInputs()" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 bg-white">
+              <option value="all">입주일 전체</option>
+              <option value="immediate">즉시 입주 가능</option>
+              <option value="negotiable">협의 입주 가능</option>
+              <option value="range">입주 희망기간 지정 (From ~ To)</option>
+            </select>
+          </div>
+
+          <!-- 입주 희망기간 From ~ To 날짜 입력줄 -->
+          <div id="moveInDateRangeRow" class="hidden lg:col-span-5 flex flex-wrap items-center gap-1.5">
+            <span class="font-bold text-blue-800">📅 From</span>
+            <input id="moveInFrom" type="date" onchange="runPropertySearch()" class="border border-blue-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
+            <span class="font-bold text-blue-800">To</span>
+            <input id="moveInTo" type="date" onchange="runPropertySearch()" class="border border-blue-300 rounded-lg px-2 py-1.5 bg-white text-xs" />
+            <label class="inline-flex items-center gap-1 text-[11px] text-slate-600 cursor-pointer">
+              <input id="includeImmediateInRange" type="checkbox" checked onchange="runPropertySearch()" class="rounded text-blue-600" />
+              <span>즉시입주 포함</span>
+            </label>
+          </div>
+
+          <div id="searchActionBtns" class="lg:col-span-8 flex justify-end gap-2">
+            <button type="button" onclick="resetSearchFilters()" class="px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-600 font-semibold">
+              조건 초기화
+            </button>
+            <button type="button" onclick="runPropertySearch(true)" class="px-6 py-2 rounded-lg bg-[#0f2544] hover:bg-slate-800 text-white font-bold transition">
+              🔍 조건 맞춤 리스트 검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 2단 구성: 좌측 검색결과 매물 리스트(7칸) + 우측 AI 상담 채팅(5칸) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- 좌측: 조건 검색 결과 매물 리스트 -->
+        <div class="lg:col-span-7 space-y-3">
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-slate-100 pb-2.5 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-sm text-[#0f2544]">📋 조건 일치 광고 매물 리스트</span>
+                <span id="filteredResultCount" class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full">0건</span>
+              </div>
+              <span id="activeFilterSummary" class="text-[11px] text-slate-500">전체 매물 표시 중</span>
+            </div>
+
+            <div id="filteredPropertyList" class="space-y-3 max-h-[640px] overflow-y-auto chat-scroll pr-1"></div>
+          </div>
+        </div>
+
+        <!-- 우측: AI 매물상담 채팅 & 사무소 안내 -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[500px]">
+            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="font-bold text-sm text-slate-800">파인부동산 AI 매물 상담창</span>
+              </div>
+              <button type="button" onclick="resetChat()" class="text-xs text-slate-400 hover:text-slate-600">초기화</button>
+            </div>
+
+            <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto chat-scroll space-y-3 bg-slate-50/50"></div>
+
+            <form onsubmit="handleChatSubmit(event)" novalidate class="p-2.5 border-t border-slate-200 bg-white rounded-b-2xl flex gap-1.5">
+              <input id="chatInput" type="text" placeholder="예: 삼송동 오피스텔 5평~10평 즉시입주 / 동산동 상가"
+                     class="flex-1 text-xs border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-[#0f2544]" />
+              <button type="submit" class="bg-[#0f2544] hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-xl transition">
+                질문
+              </button>
+            </form>
+          </div>
+
+          <!-- 오시는 길 & 카톡 바로가기 카드 -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <h3 class="font-bold text-[#0f2544] text-xs mb-1.5">📍 삼송역스칸센파인공인중개사사무소 안내</h3>
+            <p class="text-[11px] text-slate-600 leading-relaxed">
+              경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송동 294, 삼송역 3호선 6번 출구 인근)
+            </p>
+            <a id="sidebarKakaoLink" href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer"
+               class="mt-2.5 w-full flex items-center justify-center gap-1.5 bg-[#FEE500] hover:bg-[#f5dc00] text-[#191919] font-bold text-xs py-2.5 rounded-xl transition">
+              <span>💬</span> 카카오톡 채널 1:1 실시간 상담 연결
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- [탭 2] 네이버 URL 붙여넣기 + 주소·종류별 매물 등록 관리 -->
+    <section id="adminSection" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h2 id="formHeaderTitle" class="font-bold text-[#0f2544] text-base">🔗 네이버 광고매물 URL 붙여넣기 & 주소·종류별 매물등록</h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              <strong>네이버 매물 URL</strong>과 <strong>소재지 주소(예: 경기도 고양시 덕양구 삼송동), 부동산 종류, 전용면적(㎡/평), 입주가능일</strong>을 입력해 등록하세요.
+            </p>
+          </div>
+          <button type="button" onclick="resetToDefaultSamples()" class="text-xs text-slate-500 hover:text-red-600 underline shrink-0">샘플 매물 복원</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs mt-4">
+          <!-- 1행: 네이버 URL + 노출상태 -->
+          <div class="md:col-span-9">
+            <label class="block font-bold text-[#03C75A] mb-1">1. 네이버 부동산 매물 URL 붙여넣기 *</label>
+            <input id="fNaverUrl" type="text" placeholder="https://new.land.naver.com/... 또는 https://fin.land.naver.com/..."
+                   class="w-full border-2 border-emerald-400 bg-emerald-50/40 rounded-lg px-3 py-2.5" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">광고 노출 상태</label>
+            <select id="fStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2.5">
+              <option value="active">광고중 (고객 노출)</option>
+              <option value="completed">거래완료 (즉시 숨김)</option>
+            </select>
+          </div>
+
+          <!-- 2행: 소재지 주소 + 부동산 종류 + 거래형태 -->
+          <div class="md:col-span-6">
+            <label class="block font-bold text-blue-700 mb-1">2. 소재지 주소 (읍·면·동까지 필수 표기) *</label>
+            <input id="fAddress" type="text" value="경기도 고양시 덕양구 삼송동" placeholder="예: 경기도 고양시 덕양구 삼송동"
+                   class="w-full border border-blue-300 bg-blue-50/30 rounded-lg px-3 py-2 font-medium" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-bold text-blue-700 mb-1">3. 부동산 종류 *</label>
+            <select id="fCategory" class="w-full border border-blue-300 bg-blue-50/30 rounded-lg px-2.5 py-2 font-semibold">
+              <option value="오피스텔">🏢 오피스텔</option>
+              <option value="상가">🏪 상가</option>
+              <option value="사무실">💼 사무실</option>
+              <option value="아파트">🏙️ 아파트</option>
+              <option value="빌라">🏘️ 빌라</option>
+              <option value="단독/다가구주택">🏡 단독/다가구주택</option>
+            </select>
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">4. 거래 형태</label>
+            <select id="fDealType" class="w-full border border-slate-300 rounded-lg px-2.5 py-2">
+              <option value="월세">월세</option>
+              <option value="전세">전세</option>
+              <option value="매매">매매</option>
+            </select>
+          </div>
+
+          <!-- 3행: 매물명 + 거래 가격 -->
+          <div class="md:col-span-7">
+            <label class="block font-semibold text-slate-700 mb-1">5. 매물명 / 단지·건물명</label>
+            <input id="fTitle" type="text" placeholder="예: 힐스테이트 삼송역 스칸센 오피스텔 원룸형"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-5">
+            <label class="block font-semibold text-slate-700 mb-1">6. 거래 가격 (보증금/월세 · 매매가)</label>
+            <input id="fPrice" type="text" placeholder="예: 보증금 1,000만원 / 월세 65만원"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+
+          <!-- 4행: 전용면적(㎡ / 평 자동환산) + 입주가능일 구분 + 입주가능일 날짜 -->
+          <div class="md:col-span-2">
+            <label class="block font-bold text-blue-700 mb-1">7. 전용면적 (㎡)</label>
+            <input id="fAreaSqm" type="number" step="0.1" oninput="syncAreaFromSqm()" placeholder="예: 24.5"
+                   class="w-full border border-blue-300 bg-blue-50/30 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-2">
+            <label class="block font-bold text-blue-700 mb-1">전용면적 (평 환산)</label>
+            <input id="fAreaPyeong" type="number" step="0.1" oninput="syncAreaFromPyeong()" placeholder="예: 7.4"
+                   class="w-full border border-blue-300 bg-blue-50/30 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-bold text-blue-700 mb-1">8. 입주가능일 구분 *</label>
+            <select id="fMoveInType" onchange="toggleAdminMoveInDate()" class="w-full border border-blue-300 bg-blue-50/30 rounded-lg px-2.5 py-2 font-semibold">
+              <option value="immediate">즉시 입주</option>
+              <option value="negotiable">협의 입주</option>
+              <option value="date">날짜 지정 (YYYY-MM-DD)</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block font-semibold text-slate-700 mb-1">입주가능 날짜</label>
+            <input id="fMoveInDate" type="date" class="w-full border border-slate-300 rounded-lg px-2.5 py-2" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">입주 안내 문구 (선택)</label>
+            <input id="fMoveInNote" type="text" placeholder="예: 즉시입주 가능 / 세입자 만기협의"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+
+          <!-- 5행: 층수 + 방향·구조 + 사용승인·주차 + 관리비 -->
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">9. 해당층 / 총층수</label>
+            <input id="fFloor" type="text" placeholder="예: 중층 / 총 25층"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">10. 방향 · 방/욕실 수</label>
+            <input id="fDirRoom" type="text" placeholder="예: 남동향 · 방1/욕실1"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">11. 사용승인일 · 주차</label>
+            <input id="fApprovalPark" type="text" placeholder="예: 2021.12.20 · 총 1,568대"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block font-semibold text-slate-700 mb-1">12. 월 평균 관리비</label>
+            <input id="fMgmtFee" type="text" placeholder="예: 월 11만원 (공과금 별도)"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+
+          <div class="md:col-span-12">
+            <label class="block font-semibold text-slate-700 mb-1">13. 핵심 특징 요약 (보증보험·역세권·업종 등)</label>
+            <input id="fNote" type="text" placeholder="예: 삼송역 6번 출구 역세권, 풀옵션, HUG 보증보험 가능"
+                   class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <input type="hidden" id="fEditId" />
+
+        <div class="mt-4 flex justify-end gap-2">
+          <button type="button" onclick="clearForm()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-semibold">
+            입력칸 비우기
+          </button>
+          <button type="button" onclick="saveListing()" class="px-5 py-2.5 rounded-lg bg-[#03C75A] hover:bg-[#02b350] text-white text-xs font-bold transition">
+            ✅ 매물정보 리스트에 등록하기
+          </button>
+        </div>
+      </div>
+
+      <!-- 등록된 매물 목록 관리 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <h3 class="font-bold text-[#0f2544] text-sm mb-3">📋 등록된 전체 매물 관리 (<span id="adminListCount">0</span>건)</h3>
+        <div id="adminListContainer" class="space-y-3"></div>
+      </div>
+
+      <!-- 중개사무소 법정 표기정보 설정 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <h2 class="font-bold text-[#0f2544] text-base mb-1">⚙️ 중개사무소 법정 표기정보 및 카카오톡 채널 설정</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mt-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">개설등록번호</label>
+            <input id="cfgRegNo" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">신고된 대표 전화번호</label>
+            <input id="cfgPhone" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">카카오톡 채널 URL</label>
+            <input id="cfgKakaoUrl" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+        <div class="mt-3 flex justify-end">
+          <button type="button" onclick="saveOfficeConfig()" class="bg-[#0f2544] hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+            사무소 설정 저장
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 하단 법정 고지 푸터 -->
+  <footer class="bg-slate-900 text-slate-400 text-[11px] py-4 px-4 mt-8">
+    <div id="footerLegalText" class="max-w-6xl mx-auto leading-relaxed">
+      상호: 삼송역스칸센파인공인중개사사무소 | 소재지: 경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송동 294) | 대표 개업공인중개사: 노혜건 | 개설등록번호: 41281-2023-00075 | 대표전화: 02-381-4924<br/>
+      본 페이지의 매물 정보는 「공인중개사법」 제18조의2 표시·광고 기준 및 연결된 네이버 부동산 매물 상세페이지를 기준으로 안내되며, 계약 체결 여부에 따라 변동될 수 있습니다.
+    </div>
+  </footer>
+
+  <!-- 상담 요약·카톡 접수증 모달 -->
+  <div id="summaryModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-[#0f2544] text-base">📋 상담 요약 및 카카오톡 접수증</h3>
+        <button type="button" onclick="closeSummaryModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">고객 성함 / 호칭</label>
+          <input id="leadName" type="text" placeholder="예: 김민수" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">연락처</label>
+          <input id="leadPhone" type="text" placeholder="예: 010-1234-5678" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">희망 입주일 / 방문일시</label>
+          <input id="leadSchedule" type="text" placeholder="예: 2026-12-01 입주 희망 / 토요일 오후 2시" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">관심 매물명</label>
+          <input id="leadTargetProp" type="text" placeholder="예: 삼송동 스칸센 오피스텔 월세" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-semibold text-slate-700">자동 생성된 접수증 내용</label>
+          <button type="button" onclick="generateReceiptText()" class="text-xs text-blue-600 hover:underline font-semibold">🔄 대화 내용 다시 반영</button>
+        </div>
+        <textarea id="receiptPreview" rows="7" class="w-full text-xs border border-slate-300 rounded-xl p-3 bg-slate-50 leading-relaxed"></textarea>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <button type="button" onclick="copyReceiptOnly()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold py-2.5 rounded-xl transition">
+          📄 접수증 텍스트만 복사
+        </button>
+        <button type="button" onclick="copyAndOpenKakao()" class="flex-1 bg-[#FEE500] hover:bg-[#f5dc00] text-[#191919] text-xs font-bold py-2.5 rounded-xl transition">
+          💬 복사 후 카카오톡 채널로 전송하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY_LISTINGS = 'fine_realestate_addr_props_v1';
+    const STORAGE_KEY_CFG = 'fine_realestate_cfg_addr_v1';
+    const SQM_PER_PYEONG = 3.3058;
+
+    const DEFAULT_CONFIG = {
+      regNo: '41281-2023-00075',
+      phone: '02-381-4924',
+      kakaoUrl: 'https://pf.kakao.com'
+    };
+
+    const CATEGORY_ICONS = {
+      '오피스텔': '🏢',
+      '상가': '🏪',
+      '사무실': '💼',
+      '아파트': '🏙️',
+      '빌라': '🏘️',
+      '단독/다가구주택': '🏡'
+    };
+
+    const DEFAULT_LISTINGS = [
+      {
+        id: 'item-1',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 삼송동',
+        category: '오피스텔',
+        dealType: '월세',
+        title: '힐스테이트 삼송역 스칸센 오피스텔 원룸형',
+        price: '보증금 1,000만원 / 월세 65만원',
+        areaSqm: 24.5,
+        areaPyeong: 7.4,
+        moveInType: 'immediate',
+        moveInDate: '',
+        moveInDisplay: '즉시 입주 가능',
+        floor: '중층 / 총 25층',
+        dirRoom: '남동향 · 방 1 / 욕실 1',
+        approvalPark: '2021.12.20 · 총 1,568대',
+        mgmtFee: '월 평균 11만원 (일반관리비 포함 / 개별 사용료 별도)',
+        note: '삼송역 3호선 6번 출구 도보권, 빌트인 풀옵션, 즉시입주 가능'
+      },
+      {
+        id: 'item-2',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 삼송동',
+        category: '상가',
+        dealType: '월세',
+        title: '삼송로 240 단지 내 1층 근린생활시설 상가',
+        price: '보증금 3,000만원 / 월세 220만원 (VAT별도)',
+        areaSqm: 38.2,
+        areaPyeong: 11.6,
+        moveInType: 'immediate',
+        moveInDate: '',
+        moveInDisplay: '즉시 입주 가능',
+        floor: '1층 / 총 25층',
+        dirRoom: '북동향 · 오픈형 홀 / 공용화장실',
+        approvalPark: '2021.12.20 · 상가주차 가능',
+        mgmtFee: '월 평균 18만원 (공용관리비 기준 / 전기·수도 별도)',
+        note: '2,500세대 고정 배후수요, 테이크아웃·생활밀착 업종 추천'
+      },
+      {
+        id: 'item-3',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 덕은동',
+        category: '사무실',
+        dealType: '월세',
+        title: '덕은지구 비즈니스 타워 섹션오피스 사무실',
+        price: '보증금 2,000만원 / 월세 140만원 (VAT별도)',
+        areaSqm: 49.6,
+        areaPyeong: 15.0,
+        moveInType: 'date',
+        moveInDate: '2026-12-01',
+        moveInDisplay: '2026-12-01 이후 입주',
+        floor: '고층 / 총 15층',
+        dirRoom: '남향 · 룸1 + 업무홀',
+        approvalPark: '2022.06.15 · 자주식 주차 지원',
+        mgmtFee: '월 평균 16만원 (공용관리비 / 냉난방 별도)',
+        note: '세무·법무·디자인·소규모 법인 사무실 최적, 시스템냉난방 완비'
+      },
+      {
+        id: 'item-4',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 동산동',
+        category: '아파트',
+        dealType: '전세',
+        title: '삼송역 역세권 브랜드 아파트 전용 59㎡ (25평형)',
+        price: '전세 4억 8,000만원',
+        areaSqm: 59.9,
+        areaPyeong: 18.1,
+        moveInType: 'date',
+        moveInDate: '2026-12-20',
+        moveInDisplay: '2026-12-20 입주 가능',
+        floor: '중층 / 총 29층',
+        dirRoom: '남동향 · 방 3 / 욕실 2',
+        approvalPark: '2018.09.10 · 세대당 1.3대',
+        mgmtFee: '월 평균 21만원 (일반관리비 기준 / 개별 사용료 별도)',
+        note: '초품아·역세권 단지, 전세자금대출 및 보증보험 가능'
+      },
+      {
+        id: 'item-5',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 대장동',
+        category: '빌라',
+        dealType: '전세',
+        title: '대곡역 인근 신축급 다세대 빌라 투룸',
+        price: '전세 1억 9,500만원',
+        areaSqm: 42.9,
+        areaPyeong: 13.0,
+        moveInType: 'negotiable',
+        moveInDate: '',
+        moveInDisplay: '협의 입주 가능',
+        floor: '3층 / 총 4층',
+        dirRoom: '남서향 · 방 2 / 욕실 1',
+        approvalPark: '2020.05.12 · 필로티 주차 100%',
+        mgmtFee: '월 평균 6만원 (공동전기·청소·인터넷 포함)',
+        note: '채광 우수, 엘리베이터 설치, 신혼부부·직장인 추천'
+      },
+      {
+        id: 'item-6',
+        naverUrl: 'https://new.land.naver.com/',
+        status: 'active',
+        address: '경기도 고양시 덕양구 원흥동',
+        category: '단독/다가구주택',
+        dealType: '월세',
+        title: '원흥동 조용한 주택가 단독/다가구 주인세대',
+        price: '보증금 5,000만원 / 월세 130만원',
+        areaSqm: 82.6,
+        areaPyeong: 25.0,
+        moveInType: 'date',
+        moveInDate: '2027-01-15',
+        moveInDisplay: '2027-01-15 이후 입주',
+        floor: '3층 / 총 3층',
+        dirRoom: '남향 · 방 3 / 욕실 2 + 테라스',
+        approvalPark: '2017.11.03 · 전용 주차 2대',
+        mgmtFee: '월 평균 5만원 (수도·공용전기 정액 / 도시가스 별도)',
+        note: '넓은 거실과 단독 테라스 보유, 반려동물 협의 가능'
+      }
+    ];
+
+    let chatHistory = [];
+
+    function normalizeUrl(input) {
+      let val = (input || '').trim();
+      if (!val) return '';
+      if (!/^https?:\/\//i.test(val)) {
+        val = 'https://' + val;
+      }
+      return val;
+    }
+
+    function getOfficeConfig() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_CFG);
+        return saved ? JSON.parse(saved) : { ...DEFAULT_CONFIG };
+      } catch (e) {
+        return { ...DEFAULT_CONFIG };
+      }
+    }
+
+    function applyOfficeConfigUI() {
+      const cfg = getOfficeConfig();
+      document.getElementById('cfgRegNo').value = cfg.regNo;
+      document.getElementById('cfgPhone').value = cfg.phone;
+      document.getElementById('cfgKakaoUrl').value = cfg.kakaoUrl;
+
+      document.getElementById('headerOfficeMeta').textContent =
+        `경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송동 294, 삼송역 3호선 6번 출구 인근) | 대표: 노혜건 | 등록번호: ${cfg.regNo} | ☎ ${cfg.phone}`;
+
+      document.getElementById('footerLegalText').innerHTML =
+        `상호: 삼송역스칸센파인공인중개사사무소 | 소재지: 경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호 (삼송동 294) | 대표 개업공인중개사: 노혜건 | 개설등록번호: ${cfg.regNo} | 대표전화: ${cfg.phone}<br/>본 페이지의 매물 정보는 「공인중개사법」 제18조의2 표시·광고 기준 및 연결된 네이버 부동산 매물 상세페이지를 기준으로 안내되며, 계약 체결 여부에 따라 변동될 수 있습니다.`;
+
+      document.getElementById('sidebarKakaoLink').href = normalizeUrl(cfg.kakaoUrl) || 'https://pf.kakao.com';
+    }
+
+    function saveOfficeConfig() {
+      const cfg = {
+        regNo: document.getElementById('cfgRegNo').value.trim() || DEFAULT_CONFIG.regNo,
+        phone: document.getElementById('cfgPhone').value.trim() || DEFAULT_CONFIG.phone,
+        kakaoUrl: normalizeUrl(document.getElementById('cfgKakaoUrl').value) || DEFAULT_CONFIG.kakaoUrl
+      };
+      localStorage.setItem(STORAGE_KEY_CFG, JSON.stringify(cfg));
+      applyOfficeConfigUI();
+      alert('사무소 법정 표기정보가 저장되었습니다.');
+    }
+
+    function getListings() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_LISTINGS);
+        if (!saved) {
+          localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(DEFAULT_LISTINGS));
+          return [...DEFAULT_LISTINGS];
+        }
+        return JSON.parse(saved);
+      } catch (e) {
+        return [...DEFAULT_LISTINGS];
+      }
+    }
+
+    function switchTab(tab) {
+      const chatSec = document.getElementById('chatSection');
+      const adminSec = document.getElementById('adminSection');
+      const chatBtn = document.getElementById('tabChatBtn');
+      const adminBtn = document.getElementById('tabAdminBtn');
+
+      if (tab === 'chat') {
+        chatSec.classList.remove('hidden');
+        adminSec.classList.add('hidden');
+        chatBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 text-[#0f2544] transition';
+        adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white transition';
+        runPropertySearch();
+      } else {
+        chatSec.classList.add('hidden');
+        adminSec.classList.remove('hidden');
+        adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 text-[#0f2544] transition';
+        chatBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-white transition';
+        renderAdminList();
+      }
+    }
+
+    // 부동산 종류 빠른 알약 버튼 선택
+    function quickFilterCategory(cat) {
+      document.getElementById('searchCategory').value = cat;
+      updateCategoryPills(cat);
+      runPropertySearch(true);
+    }
+
+    function updateCategoryPills(cat) {
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = 'cat-pill px-2.5 py-1 rounded-full text-xs font-bold bg-[#0f2544] text-white transition';
+        } else {
+          btn.className = 'cat-pill px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition';
+        }
+      });
+    }
+
+    // 주요 주소 프리셋 선택
+    function applyAddressPreset() {
+      const val = document.getElementById('addressPresetSelect').value;
+      document.getElementById('searchAddress').value = val;
+      runPropertySearch(true);
+    }
+
+    // 평형 빠른 구간 프리셋 적용 (예: 5평~10평)
+    function applyAreaPreset() {
+      const val = document.getElementById('areaPresetSelect').value;
+      if (!val) return;
+      const [minP, maxP] = val.split('-');
+      document.getElementById('minPyeong').value = minP;
+      document.getElementById('maxPyeong').value = maxP === '999' ? '' : maxP;
+      runPropertySearch(true);
+    }
+
+    // 입주가능일 모드에 따라 From ~ To 날짜 입력줄 토글
+    function toggleDateRangeInputs() {
+      const mode = document.getElementById('searchMoveInMode').value;
+      const rangeRow = document.getElementById('moveInDateRangeRow');
+      const actionBtns = document.getElementById('searchActionBtns');
+      if (mode === 'range') {
+        rangeRow.classList.remove('hidden');
+        actionBtns.className = 'lg:col-span-3 flex justify-end gap-2';
+      } else {
+        rangeRow.classList.add('hidden');
+        actionBtns.className = 'lg:col-span-8 flex justify-end gap-2';
+      }
+      runPropertySearch();
+    }
+
+    function resetSearchFilters() {
+      document.getElementById('addressPresetSelect').value = '';
+      document.getElementById('searchAddress').value = '';
+      document.getElementById('searchCategory').value = '전체';
+      document.getElementById('searchDealType').value = '전체';
+      document.getElementById('areaPresetSelect').value = '';
+      document.getElementById('minPyeong').value = '';
+      document.getElementById('maxPyeong').value = '';
+      document.getElementById('searchMoveInMode').value = 'all';
+      document.getElementById('moveInFrom').value = '';
+      document.getElementById('moveInTo').value = '';
+      document.getElementById('moveInDateRangeRow').classList.add('hidden');
+      document.getElementById('searchActionBtns').className = 'lg:col-span-8 flex justify-end gap-2';
+      updateCategoryPills('전체');
+      runPropertySearch(true);
+    }
+
+    // 주소 · 부동산 종류 · 전용면적(평) · 입주가능일(즉시 / From~To 기간) 통합 검색 엔진
+    function filterProperties() {
+      const addressQuery = document.getElementById('searchAddress').value.trim().toLowerCase();
+      const category = document.getElementById('searchCategory').value;
+      const dealType = document.getElementById('searchDealType').value;
+      const minPyeong = parseFloat(document.getElementById('minPyeong').value);
+      const maxPyeong = parseFloat(document.getElementById('maxPyeong').value);
+      const moveInMode = document.getElementById('searchMoveInMode').value;
+      const fromDate = document.getElementById('moveInFrom').value; // YYYY-MM-DD
+      const toDate = document.getElementById('moveInTo').value;     // YYYY-MM-DD
+      const includeImmediate = document.getElementById('includeImmediateInRange').checked;
+
+      const activeList = getListings().filter(x => x.status === 'active');
+
+      return activeList.filter(item => {
+        // 1. 주소(소재지) 다중 토큰 부분일치 검색 (예: "경기도 고양시 덕양구 삼송동" 또는 "삼송동" 모두 매칭)
+        if (addressQuery) {
+          const targetAddr = `${item.address || ''} ${item.title || ''}`.toLowerCase();
+          // "경기도" vs "경기" 표기 차이 유연 처리
+          const tokens = addressQuery
+            .replace(/경기도/g, '경기')
+            .split(/\s+/)
+            .filter(Boolean);
+          const normalizedTarget = targetAddr.replace(/경기도/g, '경기');
+          const allMatch = tokens.every(tok => normalizedTarget.includes(tok));
+          if (!allMatch) return false;
+        }
+
+        // 2. 부동산 종류 필터
+        if (category !== '전체' && item.category !== category) {
+          return false;
+        }
+
+        // 3. 거래 형태 필터
+        if (dealType !== '전체' && item.dealType !== dealType) {
+          return false;
+        }
+
+        // 4. 전용면적(평) 범위 필터 (예: 5평 ~ 10평)
+        const itemPyeong = parseFloat(item.areaPyeong) || (parseFloat(item.areaSqm) ? parseFloat(item.areaSqm) / SQM_PER_PYEONG : 0);
+        if (!isNaN(minPyeong) && minPyeong > 0) {
+          if (itemPyeong <= 0 || itemPyeong < minPyeong) return false;
+        }
+        if (!isNaN(maxPyeong) && maxPyeong > 0) {
+          if (itemPyeong <= 0 || itemPyeong > maxPyeong) return false;
+        }
+
+        // 5. 입주가능일 필터 (즉시입주 / 협의입주 / From~To 기간)
+        if (moveInMode === 'immediate') {
+          if (item.moveInType !== 'immediate') return false;
+        } else if (moveInMode === 'negotiable') {
+          if (item.moveInType !== 'negotiable') return false;
+        } else if (moveInMode === 'range') {
+          if (item.moveInType === 'immediate') {
+            if (!includeImmediate) return false;
+          } else if (item.moveInType === 'date' && item.moveInDate) {
+            if (fromDate && item.moveInDate < fromDate) return false;
+            if (toDate && item.moveInDate > toDate) return false;
+          } else if (item.moveInType === 'negotiable') {
+            return true;
+          }
+        }
+
+        return true;
+      });
+    }
+
+    function runPropertySearch(logToChat = false) {
+      const addr = document.getElementById('searchAddress').value.trim();
+      const category = document.getElementById('searchCategory').value;
+      const dealType = document.getElementById('searchDealType').value;
+      const minP = document.getElementById('minPyeong').value;
+      const maxP = document.getElementById('maxPyeong').value;
+      const moveInMode = document.getElementById('searchMoveInMode').value;
+      const fromDate = document.getElementById('moveInFrom').value;
+      const toDate = document.getElementById('moveInTo').value;
+
+      updateCategoryPills(category);
+
+      const matched = filterProperties();
+      document.getElementById('filteredResultCount').textContent = `${matched.length}건`;
+
+      const addrSummary = addr || '전체 지역';
+
+      let areaSummary = '면적 전체';
+      if (minP && maxP) areaSummary = `${minP}평~${maxP}평`;
+      else if (minP) areaSummary = `${minP}평 이상`;
+      else if (maxP) areaSummary = `${maxP}평 이하`;
+
+      let moveSummary = '입주일 전체';
+      if (moveInMode === 'immediate') moveSummary = '즉시 입주';
+      else if (moveInMode === 'negotiable') moveSummary = '협의 입주';
+      else if (moveInMode === 'range') {
+        moveSummary = `입주기간(${fromDate || '제한없음'} ~ ${toDate || '제한없음'})`;
+      }
+
+      const summaryText = `${addrSummary} · ${category} · ${dealType} · ${areaSummary} · ${moveSummary}`;
+      document.getElementById('activeFilterSummary').textContent = summaryText;
+
+      const listContainer = document.getElementById('filteredPropertyList');
+      if (matched.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-10 px-4 bg-slate-50 rounded-xl border border-dashed border-slate-300 space-y-2">
+            <p class="text-sm font-bold text-slate-700">선택하신 조건에 일치하는 매물이 현재 없습니다.</p>
+            <p class="text-xs text-slate-500">지역(동 이름)이나 평형 범위, 입주 가능 기간을 넓혀 검색하시거나, 카카오톡 채널로 희망 조건을 남겨주시면 신규 접수 매물을 안내해 드립니다.</p>
+            <button type="button" onclick="resetSearchFilters()" class="mt-2 bg-[#0f2544] text-white text-xs font-semibold px-4 py-2 rounded-lg">전체 매물 다시 보기</button>
+          </div>
+        `;
+      } else {
+        listContainer.innerHTML = matched.map(item => renderCustomerCard(item)).join('');
+      }
+
+      if (logToChat) {
+        appendMessage(
+          'bot',
+          `🔍 **[${summaryText}]** 조건 검색 결과, 일치하는 광고 매물 **${matched.length}건**이 좌측 리스트에 표시되었습니다.`
+        );
+      }
+    }
+
+    function renderCustomerCard(item) {
+      const icon = CATEGORY_ICONS[item.category] || '🏢';
+      const sqmText = item.areaSqm ? `${item.areaSqm}㎡` : '';
+      const pyeongText = item.areaPyeong ? `구 ${item.areaPyeong}평` : '';
+      const areaDisplay = (sqmText && pyeongText)
+        ? `전용 ${sqmText} (${pyeongText})`
+        : (sqmText ? `전용 ${sqmText}` : (pyeongText || '네이버 상세페이지 참조'));
+
+      const moveInBadgeClass = item.moveInType === 'immediate'
+        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+        : 'bg-amber-50 text-amber-800 border border-amber-200';
+
+      const naverBtn = item.naverUrl
+        ? `<a href="${item.naverUrl}" target="_blank" rel="noopener noreferrer"
+              class="flex-1 text-center bg-[#03C75A] hover:bg-[#02b350] text-white font-bold text-xs py-2.5 px-3 rounded-lg transition">
+             N 네이버 부동산 상세보기 ↗
+           </a>`
+        : '';
+
+      return `
+        <div class="bg-white border border-slate-200 hover:border-blue-300 rounded-xl p-3.5 shadow-xs text-xs space-y-2.5 transition">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 border-b border-slate-100 pb-2">
+            <div>
+              <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                <span class="font-bold px-2 py-0.5 rounded text-[11px] bg-blue-50 text-blue-800 border border-blue-200">
+                  ${icon} ${item.category} · ${item.dealType}
+                </span>
+                <span class="font-semibold px-2 py-0.5 rounded text-[11px] bg-slate-100 text-slate-700">
+                  📍 ${item.address || '고양시 덕양구'}
+                </span>
+                <span class="font-semibold px-2 py-0.5 rounded text-[11px] ${moveInBadgeClass}">
+                  📅 ${item.moveInDisplay}
+                </span>
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm">${item.title}</h4>
+            </div>
+            <div class="font-bold text-emerald-700 text-sm sm:text-right shrink-0">${item.price}</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-slate-700 bg-slate-50 p-2.5 rounded-lg">
+            <div><span class="text-slate-500 font-semibold">• 소재지 주소:</span> <strong class="text-slate-900">${item.address || '고양시 덕양구'}</strong></div>
+            <div><span class="text-slate-500 font-semibold">• 전용면적:</span> <strong class="text-slate-900">${areaDisplay}</strong></div>
+            <div><span class="text-slate-500 font-semibold">• 입주가능일:</span> <strong class="text-slate-900">${item.moveInDisplay}</strong></div>
+            <div><span class="text-slate-500 font-semibold">• 해당층/총층:</span> ${item.floor}</div>
+            <div><span class="text-slate-500 font-semibold">• 방향·구조:</span> ${item.dirRoom}</div>
+            <div><span class="text-slate-500 font-semibold">• 사용승인·주차:</span> ${item.approvalPark}</div>
+            <div class="sm:col-span-2"><span class="text-slate-500 font-semibold">• 월 관리비:</span> ${item.mgmtFee}</div>
+          </div>
+
+          ${item.note ? `<p class="text-[11px] text-slate-600 bg-blue-50/50 border border-blue-100 rounded-lg px-2.5 py-1.5">💡 ${item.note}</p>` : ''}
+
+          <div class="flex flex-col sm:flex-row gap-2 pt-0.5">
+            ${naverBtn}
+            <button type="button" onclick="bookListing('[${item.address || ''}] ${item.title.replace(/'/g, "\\'")}')"
+                    class="flex-1 bg-[#0f2544] hover:bg-slate-800 text-white font-semibold text-xs py-2.5 px-3 rounded-lg transition">
+              📅 이 매물 방문 임장 예약
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function appendMessage(sender, text) {
+      const container = document.getElementById('chatMessages');
+      const isUser = sender === 'user';
+
+      const msgHtml = `
+        <div class="flex ${isUser ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-[92%] ${isUser ? 'bg-[#0f2544] text-white rounded-2xl rounded-tr-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm'} px-3.5 py-2.5 shadow-xs text-xs leading-relaxed">
+            <div class="whitespace-pre-line">${text}</div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', msgHtml);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // 채팅 자연어 입력 시 주소·종류·평형·입주일 자동 파싱 연동
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      chatHistory.push({ role: 'user', text });
+      appendMessage('user', text);
+      input.value = '';
+
+      const q = text.toLowerCase();
+
+      if (q.includes('예약') || q.includes('임장') || q.includes('방문')) {
+        const reply = `방문 임장 예약을 도와드리겠습니다!\n\n좌측 매물 카드의 **[📅 이 매물 방문 임장 예약]** 또는 상단 **[📋 상담 요약·카톡 접수증]**을 눌러 성함·연락처·희망 일시를 남겨주시면 바로 확인해 연락드리겠습니다.`;
+        chatHistory.push({ role: 'bot', text: reply });
+        appendMessage('bot', reply);
+        return;
+      }
+
+      // 1. 주소(동 이름) 자동 감지
+      const dongKeywords = ['삼송동', '동산동', '원흥동', '덕은동', '대장동', '신원동', '지축동', '행신동', '화정동', '덕양구', '고양시'];
+      const foundDongs = dongKeywords.filter(d => q.includes(d));
+      if (foundDongs.length > 0) {
+        document.getElementById('searchAddress').value = foundDongs.join(' ');
+      }
+
+      // 2. 부동산 종류 자동 감지
+      if (q.includes('오피스텔')) document.getElementById('searchCategory').value = '오피스텔';
+      else if (q.includes('상가')) document.getElementById('searchCategory').value = '상가';
+      else if (q.includes('사무실')) document.getElementById('searchCategory').value = '사무실';
+      else if (q.includes('아파트')) document.getElementById('searchCategory').value = '아파트';
+      else if (q.includes('빌라')) document.getElementById('searchCategory').value = '빌라';
+      else if (q.includes('단독') || q.includes('다가구')) document.getElementById('searchCategory').value = '단독/다가구주택';
+
+      // 3. 거래 형태 감지
+      if (q.includes('월세')) document.getElementById('searchDealType').value = '월세';
+      else if (q.includes('전세')) document.getElementById('searchDealType').value = '전세';
+      else if (q.includes('매매')) document.getElementById('searchDealType').value = '매매';
+
+      // 4. 평수 범위 감지
+      const rangeMatch = q.match(/(\d+(?:\.\d+)?)\s*평\s*[~\-부터]\s*(\d+(?:\.\d+)?)\s*평/);
+      const singlePyeongMatch = q.match(/(\d+(?:\.\d+)?)\s*평/);
+      if (rangeMatch) {
+        document.getElementById('minPyeong').value = rangeMatch[1];
+        document.getElementById('maxPyeong').value = rangeMatch[2];
+      } else if (singlePyeongMatch) {
+        const p = parseFloat(singlePyeongMatch[1]);
+        document.getElementById('minPyeong').value = Math.max(1, p - 3);
+        document.getElementById('maxPyeong').value = p + 3;
+      }
+
+      // 5. 입주일 감지
+      if (q.includes('즉시')) {
+        document.getElementById('searchMoveInMode').value = 'immediate';
+        document.getElementById('moveInDateRangeRow').classList.add('hidden');
+      } else if (q.includes('협의')) {
+        document.getElementById('searchMoveInMode').value = 'negotiable';
+        document.getElementById('moveInDateRangeRow').classList.add('hidden');
+      }
+
+      runPropertySearch(true);
+    }
+
+    function bookListing(title) {
+      document.getElementById('leadTargetProp').value = title;
+      openSummaryModal();
+    }
+
+    function resetChat() {
+      chatHistory = [];
+      document.getElementById('chatMessages').innerHTML = '';
+      initWelcome();
+    }
+
+    function initWelcome() {
+      const welcomeText =
+        `안녕하세요! **삼송역스칸센파인공인중개사사무소**입니다.\n\n` +
+        `상단 필터에서 **주소(예: 경기도 고양시 덕양구 삼송동)**, **부동산 종류(오피스텔·상가·사무실·아파트·빌라·단독/다가구)**, **전용면적(평)**, **입주가능일(즉시/기간)**을 지정하시면 좌측에 일치하는 매물 리스트가 바로 정리됩니다.`;
+      appendMessage('bot', welcomeText);
+    }
+
+    // 관리자 폼: ㎡ <-> 평 자동 환산
+    function syncAreaFromSqm() {
+      const sqm = parseFloat(document.getElementById('fAreaSqm').value);
+      if (!isNaN(sqm) && sqm > 0) {
+        document.getElementById('fAreaPyeong').value = (sqm / SQM_PER_PYEONG).toFixed(1);
+      } else {
+        document.getElementById('fAreaPyeong').value = '';
+      }
+    }
+
+    function syncAreaFromPyeong() {
+      const pyeong = parseFloat(document.getElementById('fAreaPyeong').value);
+      if (!isNaN(pyeong) && pyeong > 0) {
+        document.getElementById('fAreaSqm').value = (pyeong * SQM_PER_PYEONG).toFixed(1);
+      } else {
+        document.getElementById('fAreaSqm').value = '';
+      }
+    }
+
+    function toggleAdminMoveInDate() {
+      const type = document.getElementById('fMoveInType').value;
+      const dateInput = document.getElementById('fMoveInDate');
+      if (type === 'date') {
+        dateInput.classList.add('border-blue-400', 'bg-blue-50/30');
+      } else {
+        dateInput.classList.remove('border-blue-400', 'bg-blue-50/30');
+      }
+    }
+
+    function saveListing() {
+      const rawUrl = document.getElementById('fNaverUrl').value;
+      const finalUrl = normalizeUrl(rawUrl);
+      const rawTitle = document.getElementById('fTitle').value.trim();
+      const address = document.getElementById('fAddress').value.trim() || '경기도 고양시 덕양구 삼송동';
+
+      if (!finalUrl && !rawTitle) {
+        alert('네이버 부동산 매물 URL 또는 매물명 중 하나는 입력해 주세요.');
+        document.getElementById('fNaverUrl').focus();
+        return;
+      }
+
+      const category = document.getElementById('fCategory').value;
+      const dealType = document.getElementById('fDealType').value;
+      const areaSqm = parseFloat(document.getElementById('fAreaSqm').value) || 0;
+      const areaPyeong = parseFloat(document.getElementById('fAreaPyeong').value) || (areaSqm ? parseFloat((areaSqm / SQM_PER_PYEONG).toFixed(1)) : 0);
+
+      const moveInType = document.getElementById('fMoveInType').value;
+      const moveInDate = document.getElementById('fMoveInDate').value;
+      const moveInNote = document.getElementById('fMoveInNote').value.trim();
+
+      let moveInDisplay = moveInNote;
+      if (!moveInDisplay) {
+        if (moveInType === 'immediate') moveInDisplay = '즉시 입주 가능';
+        else if (moveInType === 'negotiable') moveInDisplay = '협의 입주 가능';
+        else moveInDisplay = moveInDate ? `${moveInDate} 이후 입주` : '입주일 협의';
+      }
+
+      const editId = document.getElementById('fEditId').value;
+      const refFallback = finalUrl ? '네이버 상세페이지 참조' : '문의 시 안내';
+
+      const newItem = {
+        id: editId || 'item-' + Date.now(),
+        naverUrl: finalUrl,
+        status: document.getElementById('fStatus').value,
+        address: address,
+        category: category,
+        dealType: dealType,
+        title: rawTitle || `${address} ${category} ${dealType} 매물`,
+        price: document.getElementById('fPrice').value.trim() || refFallback,
+        areaSqm: areaSqm,
+        areaPyeong: areaPyeong,
+        moveInType: moveInType,
+        moveInDate: moveInDate,
+        moveInDisplay: moveInDisplay,
+        floor: document.getElementById('fFloor').value.trim() || refFallback,
+        dirRoom: document.getElementById('fDirRoom').value.trim() || refFallback,
+        approvalPark: document.getElementById('fApprovalPark').value.trim() || refFallback,
+        mgmtFee: document.getElementById('fMgmtFee').value.trim() || refFallback,
+        note: document.getElementById('fNote').value.trim()
+      };
+
+      const list = getListings();
+      if (editId) {
+        const idx = list.findIndex(x => x.id === editId);
+        if (idx > -1) list[idx] = newItem;
+      } else {
+        list.unshift(newItem);
+      }
+
+      localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(list));
+      clearForm();
+      renderAdminList();
+      alert('매물이 등록되었습니다! [매물 맞춤검색] 화면에서 주소·종류·평형·입주일별로 바로 검색됩니다.');
+    }
+
+    function editListing(id) {
+      const item = getListings().find(x => x.id === id);
+      if (!item) return;
+      document.getElementById('formHeaderTitle').textContent = '✏️ 등록 매물 정보 수정';
+      document.getElementById('fEditId').value = item.id;
+      document.getElementById('fNaverUrl').value = item.naverUrl || '';
+      document.getElementById('fStatus').value = item.status;
+      document.getElementById('fAddress').value = item.address || '경기도 고양시 덕양구 삼송동';
+      document.getElementById('fCategory').value = item.category;
+      document.getElementById('fDealType').value = item.dealType;
+      document.getElementById('fTitle').value = item.title;
+      document.getElementById('fPrice').value = item.price === '네이버 상세페이지 참조' ? '' : item.price;
+      document.getElementById('fAreaSqm').value = item.areaSqm || '';
+      document.getElementById('fAreaPyeong').value = item.areaPyeong || '';
+      document.getElementById('fMoveInType').value = item.moveInType || 'immediate';
+      document.getElementById('fMoveInDate').value = item.moveInDate || '';
+      document.getElementById('fMoveInNote').value = item.moveInDisplay || '';
+      document.getElementById('fFloor').value = item.floor === '네이버 상세페이지 참조' ? '' : item.floor;
+      document.getElementById('fDirRoom').value = item.dirRoom === '네이버 상세페이지 참조' ? '' : item.dirRoom;
+      document.getElementById('fApprovalPark').value = item.approvalPark === '네이버 상세페이지 참조' ? '' : item.approvalPark;
+      document.getElementById('fMgmtFee').value = item.mgmtFee === '네이버 상세페이지 참조' ? '' : item.mgmtFee;
+      document.getElementById('fNote').value = item.note || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleStatus(id) {
+      const list = getListings().map(x =>
+        x.id === id ? { ...x, status: x.status === 'active' ? 'completed' : 'active' } : x
+      );
+      localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(list));
+      renderAdminList();
+    }
+
+    function deleteListing(id) {
+      if (!confirm('이 매물을 삭제하시겠습니까?')) return;
+      const list = getListings().filter(x => x.id !== id);
+      localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(list));
+      renderAdminList();
+    }
+
+    function clearForm() {
+      document.getElementById('formHeaderTitle').textContent = '🔗 네이버 광고매물 URL 붙여넣기 & 주소·종류별 매물등록';
+      document.getElementById('fEditId').value = '';
+      document.getElementById('fNaverUrl').value = '';
+      document.getElementById('fStatus').value = 'active';
+      document.getElementById('fAddress').value = '경기도 고양시 덕양구 삼송동';
+      document.getElementById('fCategory').value = '오피스텔';
+      document.getElementById('fDealType').value = '월세';
+      document.getElementById('fTitle').value = '';
+      document.getElementById('fPrice').value = '';
+      document.getElementById('fAreaSqm').value = '';
+      document.getElementById('fAreaPyeong').value = '';
+      document.getElementById('fMoveInType').value = 'immediate';
+      document.getElementById('fMoveInDate').value = '';
+      document.getElementById('fMoveInNote').value = '';
+      document.getElementById('fFloor').value = '';
+      document.getElementById('fDirRoom').value = '';
+      document.getElementById('fApprovalPark').value = '';
+      document.getElementById('fMgmtFee').value = '';
+      document.getElementById('fNote').value = '';
+    }
+
+    function resetToDefaultSamples() {
+      if (!confirm('6개 부동산 종류 및 지역별 기본 샘플 매물로 초기화하시겠습니까?')) return;
+      localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(DEFAULT_LISTINGS));
+      renderAdminList();
+    }
+
+    function renderAdminList() {
+      const list = getListings();
+      document.getElementById('adminListCount').textContent = list.length;
+      const container = document.getElementById('adminListContainer');
+
+      container.innerHTML = list.map(item => {
+        const icon = CATEGORY_ICONS[item.category] || '🏢';
+        const areaStr = item.areaSqm ? `전용 ${item.areaSqm}㎡ (구 ${item.areaPyeong}평)` : '면적 미기재';
+        return `
+          <div class="border border-slate-200 rounded-xl p-3.5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs ${item.status === 'completed' ? 'bg-slate-100 opacity-70' : 'bg-white'}">
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded font-bold ${item.status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-300 text-slate-700'}">
+                  ${item.status === 'active' ? '광고중' : '거래완료(숨김)'}
+                </span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">📍 ${item.address || '고양시 덕양구'}</span>
+                <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold">${icon} ${item.category} · ${item.dealType}</span>
+                <span class="font-bold text-slate-900 text-sm">${item.title}</span>
+                <span class="font-bold text-emerald-700">${item.price}</span>
+              </div>
+              <p class="text-slate-600">
+                면적: <strong>${areaStr}</strong> | 입주가능일: <strong>${item.moveInDisplay}</strong> | 층수: ${item.floor} | 방향·구조: ${item.dirRoom}
+              </p>
+              <p class="text-slate-500">
+                사용승인·주차: ${item.approvalPark} | 관리비: ${item.mgmtFee}
+                ${item.naverUrl ? ` · <a href="${item.naverUrl}" target="_blank" rel="noopener noreferrer" class="text-[#03C75A] font-bold underline">네이버 링크 ↗</a>` : ''}
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="toggleStatus('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 font-semibold">
+                ${item.status === 'active' ? '거래완료' : '재광고'}
+              </button>
+              <button type="button" onclick="editListing('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 font-semibold">
+                수정
+              </button>
+              <button type="button" onclick="deleteListing('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 font-semibold">
+                삭제
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openSummaryModal() {
+      generateReceiptText();
+      const modal = document.getElementById('summaryModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSummaryModal() {
+      const modal = document.getElementById('summaryModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function generateReceiptText() {
+      const name = document.getElementById('leadName').value.trim() || '미입력';
+      const phone = document.getElementById('leadPhone').value.trim() || '미입력';
+      const schedule = document.getElementById('leadSchedule').value.trim() || '협의 희망';
+      const target = document.getElementById('leadTargetProp').value.trim() || document.getElementById('activeFilterSummary').textContent;
+      const userQueries = chatHistory.filter(m => m.role === 'user').map(m => `- ${m.text}`).join('\n') || `- 검색 조건: ${document.getElementById('activeFilterSummary').textContent}`;
+      const cfg = getOfficeConfig();
+
+      const receipt =
+        `[파인부동산 매물·임장 접수증]\n` +
+        `■ 중개사무소: 삼송역스칸센파인공인중개사사무소 (등록번호: ${cfg.regNo})\n` +
+        `■ 위치: 경기 고양시 덕양구 삼송로 240, 201동 1층 상가 113호\n` +
+        `────────────────────\n` +
+        `• 고객명: ${name}\n` +
+        `• 연락처: ${phone}\n` +
+        `• 관심 매물/조건: ${target}\n` +
+        `• 희망 일정: ${schedule}\n` +
+        `• 문의 내역:\n${userQueries}\n` +
+        `────────────────────\n` +
+        `※ 담당자(노혜건 대표 / 조준영 중개보조원) 확인 후 순차 연락드리겠습니다.`;
+
+      document.getElementById('receiptPreview').value = receipt;
+    }
+
+    function copyReceiptOnly() {
+      generateReceiptText();
+      const text = document.getElementById('receiptPreview').value;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('접수증 내용이 복사되었습니다.');
+      });
+    }
+
+    function copyAndOpenKakao() {
+      generateReceiptText();
+      const text = document.getElementById('receiptPreview').value;
+      const cfg = getOfficeConfig();
+      navigator.clipboard.writeText(text).then(() => {
+        alert('접수증이 복사되었습니다! 열리는 카카오톡 채널 채팅창에 붙여넣어 전송해 주세요.');
+        window.open(normalizeUrl(cfg.kakaoUrl) || 'https://pf.kakao.com', '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    // 초기 실행
+    applyOfficeConfigUI();
+    runPropertySearch(false);
+    initWelcome();
+  </script>
+</body>
+</html>
